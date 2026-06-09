@@ -7,21 +7,33 @@ import type {
   ExerciseAccess,
   ExerciseResultSummary,
   ExerciseSession,
+  MemoryRow,
   MultipleChoiceStep,
   QuestionOption
 } from '../types';
 
+function cloneMemory(memory: MemoryRow[] | undefined): MemoryRow[] {
+  return (memory ?? []).map((row) => ({
+    ...row,
+    bytes: [...row.bytes]
+  }));
+}
+
 export function createInitialSession(exercise: Exercise): ExerciseSession {
+  const firstStep = exercise.steps[0];
+
   return {
     exerciseId: exercise.id,
     currentStepIndex: 0,
-    registers: { ...exercise.steps[0]?.before },
+    registers: { ...firstStep?.before },
+    memory: cloneMemory(firstStep?.memoryBefore ?? exercise.initialMemory),
     selectedOptionId: null,
     failedOptionIds: [],
     attempts: 0,
     phase: 'answering',
     feedback: null,
     changed: [],
+    changedMemory: [],
     showCode: false,
     score: 0,
     firstCorrect: 0,
@@ -92,7 +104,9 @@ function applyCorrectAnswer(
     withHint: session.withHint + (session.attempts === 0 ? 0 : 1),
     logs: [...session.logs, log],
     registers: { ...step.after },
+    memory: cloneMemory(step.memoryAfter ?? step.memoryBefore ?? session.memory),
     changed: [...step.changed],
+    changedMemory: [...(step.changedMemory ?? [])],
     phase: 'complete',
     feedback: { type: 'ok', text: option.feedback ?? step.correctExplain },
     selectedOptionId: option.id
@@ -125,7 +139,9 @@ function applyWrongAnswer(
     revealed: session.revealed + 1,
     failedOptionIds,
     registers: { ...step.after },
+    memory: cloneMemory(step.memoryAfter ?? step.memoryBefore ?? session.memory),
     changed: [...step.changed],
+    changedMemory: [...(step.changedMemory ?? [])],
     phase: 'complete',
     feedback: {
       type: 'bad',
@@ -146,12 +162,14 @@ export function nextStep(session: ExerciseSession, exercise: Exercise): Exercise
     ...session,
     currentStepIndex: nextIndex,
     registers: { ...next.before },
+    memory: cloneMemory(next.memoryBefore ?? session.memory),
     selectedOptionId: null,
     failedOptionIds: [],
     attempts: 0,
     phase: 'answering',
     feedback: null,
-    changed: []
+    changed: [],
+    changedMemory: []
   };
 }
 
