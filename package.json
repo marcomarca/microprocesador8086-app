@@ -1,0 +1,29 @@
+{
+  "name": "microprocesador8086-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Aplicación tutorial SPA para ejercicios interactivos de microprocesador 8086.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run validate:content && vite build",
+    "build:github": "npm run build",
+    "build:single": "npm run validate:content && vite build --mode singlefile --outDir dist-single",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "validate:content": "tsx scripts/validate-content.ts"
+  },
+  "dependencies": {
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "latest",
+    "svelte": "latest",
+    "svelte-check": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vite-plugin-singlefile": "latest",
+    "tsx": "latest",
+    "@types/node": "latest"
+  }
+}
