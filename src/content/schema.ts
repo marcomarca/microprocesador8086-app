@@ -3,6 +3,13 @@ import type { CourseContent } from '../types';
 
 const registerStateSchema = z.record(z.string(), z.string());
 
+const memoryRowSchema = z.object({
+  label: z.string().min(1),
+  address: z.string().min(1),
+  bytes: z.array(z.string().min(1)).min(1),
+  word: z.string().min(1)
+});
+
 const optionSchema = z.object({
   id: z.string().min(1),
   text: z.string().min(1),
@@ -22,6 +29,9 @@ const stepSchema = z.object({
   before: registerStateSchema,
   after: registerStateSchema,
   changed: z.array(z.string()),
+  memoryBefore: z.array(memoryRowSchema).optional(),
+  memoryAfter: z.array(memoryRowSchema).optional(),
+  changedMemory: z.array(z.string()).optional(),
   correctExplain: z.string().min(1),
   diagram: z.string().optional(),
   options: z.array(optionSchema).min(2)
@@ -36,6 +46,7 @@ const exerciseSchema = z.object({
   description: z.string().min(1),
   estimatedMinutes: z.number().int().positive(),
   initialRegisters: registerStateSchema,
+  initialMemory: z.array(memoryRowSchema).optional(),
   codeLines: z.array(z.string()).min(1),
   steps: z.array(stepSchema).min(1),
   passing: z.object({
