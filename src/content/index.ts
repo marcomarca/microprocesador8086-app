@@ -1,8 +1,13 @@
 import type { CourseContent } from '../types';
+import { arithmeticFlagsExercise } from './arithmeticFlags';
+import { callRetExercise } from './callRet';
+import { conditionalJumpsExercise } from './conditionalJumps';
 import { directMemoryDwExercise } from './directMemoryDw';
 import { errorCatalog } from './errorCatalog';
 import { indirectIndexedExercise } from './indirectIndexed';
+import { loopAccumulatorExercise } from './loopAccumulator';
 import { movBasicExercise } from './movBasic';
+import { stackLifoExercise } from './stackLifo';
 
 export const courseContent: CourseContent = {
   title: 'Microprocesador 8086',
@@ -10,30 +15,86 @@ export const courseContent: CourseContent = {
   version: '0.1.0',
   errorCatalog,
   modules: [
-    {
-      id: 'mod_mov',
-      order: 1,
-      title: 'Módulo 1 · MOV',
-      subtitle: 'Transferencia entre registros',
-      description: 'Primer bloque de práctica sobre MOV, registros completos y registros parciales.',
-      exerciseIds: ['mov_basic_01']
-    },
-    {
-      id: 'mod_memory',
-      order: 2,
-      title: 'Módulo 2 · Memoria directa',
-      subtitle: 'DW, direccionamiento directo y little endian',
-      description: 'Práctica sobre palabras en memoria, etiquetas, operandos inmediatos y escritura de resultados.',
-      exerciseIds: ['direct_memory_dw_02']
-    },
-    {
-      id: 'mod_indirect',
-      order: 3,
-      title: 'Módulo 3 · Direccionamiento indirecto',
-      subtitle: 'SI, BX, DI y arreglos DW',
-      description: 'Práctica sobre registros índice/base, offsets, lectura indirecta y escritura mediante [registro].',
-      exerciseIds: ['indirect_indexed_03']
-    }
-  ],
-  exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise]
+  {
+    id: "mod_mov",
+    order: 1,
+    title: "Módulo 1 · MOV",
+    subtitle: "Transferencia entre registros",
+    description: "Primer bloque de práctica sobre MOV, registros completos y registros parciales.",
+    exerciseIds: [
+      "mov_basic_01"
+    ]
+  },
+  {
+    id: "mod_memory",
+    order: 2,
+    title: "Módulo 2 · Memoria directa",
+    subtitle: "DW, direccionamiento directo y little endian",
+    description: "Práctica sobre palabras en memoria, etiquetas, operandos inmediatos y escritura de resultados.",
+    exerciseIds: [
+      "direct_memory_dw_02"
+    ]
+  },
+  {
+    id: "mod_indirect",
+    order: 3,
+    title: "Módulo 3 · Direccionamiento indirecto",
+    subtitle: "SI, BX, DI y arreglos DW",
+    description: "Práctica sobre registros índice/base, offsets, lectura indirecta y escritura mediante [registro].",
+    exerciseIds: [
+      "indirect_indexed_03"
+    ]
+  },
+  {
+    id: "mod_flags",
+    order: 4,
+    title: "Módulo 4 · Aritmética y flags",
+    subtitle: "ADD, SUB, CMP y flags básicos",
+    description: "Práctica sobre operaciones aritméticas y actualización de ZF, CF, SF, OF y PF.",
+    exerciseIds: [
+      "arithmetic_flags_04"
+    ]
+  },
+  {
+    id: "mod_jumps",
+    order: 5,
+    title: "Módulo 5 · Comparación y saltos",
+    subtitle: "CMP, JZ, JG y JL",
+    description: "Práctica sobre flags preparados por CMP y decisiones de salto condicional.",
+    exerciseIds: [
+      "conditional_jumps_05"
+    ]
+  },
+  {
+    id: "mod_loop",
+    order: 6,
+    title: "Módulo 6 · Bucles con arreglos",
+    subtitle: "LOOP, CX, SI y acumulador",
+    description: "Práctica sobre recorrido de arreglos DW con SI, acumulación en AX y control con CX.",
+    exerciseIds: [
+      "loop_accumulator_06"
+    ]
+  },
+  {
+    id: "mod_stack",
+    order: 7,
+    title: "Módulo 7 · Pila básica",
+    subtitle: "PUSH, POP, SP y LIFO",
+    description: "Práctica sobre comportamiento LIFO y cambios de SP al apilar y desapilar palabras.",
+    exerciseIds: [
+      "stack_lifo_07"
+    ]
+  },
+  {
+    id: "mod_subroutine",
+    order: 8,
+    title: "Módulo 8 · Subrutinas",
+    subtitle: "CALL, RET y flujo principal",
+    description: "Práctica sobre transferencia de control entre programa principal y subrutina.",
+    exerciseIds: [
+      "call_ret_08"
+    ]
+  }
+],
+  exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };

@@ -14,7 +14,12 @@ export type RegisterName =
   | 'SP'
   | 'BP'
   | 'SI'
-  | 'DI';
+  | 'DI'
+  | 'ZF'
+  | 'CF'
+  | 'SF'
+  | 'OF'
+  | 'PF';
 
 export type RegisterState = Partial<Record<RegisterName, string>>;
 
