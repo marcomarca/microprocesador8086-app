@@ -2,6 +2,7 @@
   import type { Exercise, ExerciseSession } from '../types';
   import CodeBlock from '../components/CodeBlock.svelte';
   import FeedbackBox from '../components/FeedbackBox.svelte';
+  import MemoryPanel from '../components/MemoryPanel.svelte';
   import OptionButton from '../components/OptionButton.svelte';
   import ProgressBar from '../components/ProgressBar.svelte';
   import RegisterPanel from '../components/RegisterPanel.svelte';
@@ -27,6 +28,13 @@
   <div class="label">Registros actuales</div>
   <RegisterPanel registers={session.registers} changed={session.changed} />
 </section>
+
+{#if session.memory.length}
+  <section class="card">
+    <div class="label">Memoria</div>
+    <MemoryPanel memory={session.memory} changed={session.changedMemory} />
+  </section>
+{/if}
 
 <section class="card">
   <div class="label">{step.title}</div>
