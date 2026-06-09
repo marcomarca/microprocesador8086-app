@@ -1,4 +1,5 @@
 import type { CourseContent } from '../types';
+import { directMemoryDwExercise } from './directMemoryDw';
 import { errorCatalog } from './errorCatalog';
 import { movBasicExercise } from './movBasic';
 
@@ -15,7 +16,15 @@ export const courseContent: CourseContent = {
       subtitle: 'Transferencia entre registros',
       description: 'Primer bloque de práctica sobre MOV, registros completos y registros parciales.',
       exerciseIds: ['mov_basic_01']
+    },
+    {
+      id: 'mod_memory',
+      order: 2,
+      title: 'Módulo 2 · Memoria directa',
+      subtitle: 'DW, direccionamiento directo y little endian',
+      description: 'Práctica sobre palabras en memoria, etiquetas, operandos inmediatos y escritura de resultados.',
+      exerciseIds: ['direct_memory_dw_02']
     }
   ],
-  exercises: [movBasicExercise]
+  exercises: [movBasicExercise, directMemoryDwExercise]
 };
