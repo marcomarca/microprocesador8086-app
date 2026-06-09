@@ -22,5 +22,22 @@ export const errorCatalog: Record<ConceptErrorTag, string> = {
   sub_reemplaza_destino: 'Cree que SUB reemplaza AX con el inmediato.',
   mov_borra_fuente: 'Cree que MOV borra el registro fuente.',
   no_reconoce_escritura_memoria: 'No reconoce que MOV word R, AX escribe en memoria.',
-  pierde_byte_alto: 'No conserva el byte alto al representar una palabra.'
+  pierde_byte_alto: 'No conserva el byte alto al representar una palabra.',
+  cree_dw_avanza_1: 'Cree que cada elemento DW avanza un byte en lugar de dos.',
+  salta_un_elemento: 'Calcula la dirección como si saltara un elemento completo adicional.',
+  confunde_offset_con_contenido: 'Confunde offset ARR con el contenido almacenado en ARR.',
+  confunde_offset_con_bytes: 'Confunde la dirección con la representación física de bytes.',
+  confunde_si_con_contenido: 'Confunde SI con [SI]; usa el valor del registro en vez del contenido apuntado.',
+  cree_add_si_1_apunta_siguiente: 'Cree que avanzar SI en 1 llega al siguiente elemento DW.',
+  no_reconoce_lectura_desalineada: 'No reconoce que una lectura desde una dirección intermedia produce una palabra incorrecta.',
+  avance_si_incorrecto_1: 'Avanza SI en 1 byte aunque el arreglo usa palabras DW.',
+  avance_si_incorrecto_4: 'Avanza SI demasiado y salta un elemento.',
+  bx_no_recibe_si: 'No reconoce que MOV BX, SI copia el valor de SI en BX.',
+  avance_bx_incorrecto_1: 'Avanza BX en 1 byte aunque el arreglo usa palabras DW.',
+  avance_bx_no_cambia: 'Cree que ADD BX, 2 no modifica BX.',
+  confunde_bx_con_bx_indirecto: 'Confunde BX con [BX]; suma la dirección en vez del contenido apuntado.',
+  no_reconoce_offset_sum: 'No reconoce que offset SUM carga la dirección de SUM.',
+  confunde_di_con_contenido_sum: 'Confunde DI con el contenido almacenado en SUM.',
+  no_reconoce_escritura_indirecta: 'No reconoce que MOV word [DI], AX escribe en la memoria apuntada por DI.',
+  escribe_en_di_no_memoria: 'Cree que la instrucción modifica DI en vez de la memoria apuntada.'
 };

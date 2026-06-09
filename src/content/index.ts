@@ -1,6 +1,7 @@
 import type { CourseContent } from '../types';
 import { directMemoryDwExercise } from './directMemoryDw';
 import { errorCatalog } from './errorCatalog';
+import { indirectIndexedExercise } from './indirectIndexed';
 import { movBasicExercise } from './movBasic';
 
 export const courseContent: CourseContent = {
@@ -24,7 +25,15 @@ export const courseContent: CourseContent = {
       subtitle: 'DW, direccionamiento directo y little endian',
       description: 'Práctica sobre palabras en memoria, etiquetas, operandos inmediatos y escritura de resultados.',
       exerciseIds: ['direct_memory_dw_02']
+    },
+    {
+      id: 'mod_indirect',
+      order: 3,
+      title: 'Módulo 3 · Direccionamiento indirecto',
+      subtitle: 'SI, BX, DI y arreglos DW',
+      description: 'Práctica sobre registros índice/base, offsets, lectura indirecta y escritura mediante [registro].',
+      exerciseIds: ['indirect_indexed_03']
     }
   ],
-  exercises: [movBasicExercise, directMemoryDwExercise]
+  exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise]
 };
