@@ -18,6 +18,13 @@ export type RegisterName =
 
 export type RegisterState = Partial<Record<RegisterName, string>>;
 
+export type MemoryRow = {
+  label: string;
+  address: string;
+  bytes: string[];
+  word: string;
+};
+
 export type FeedbackType = 'ok' | 'bad' | 'warn' | 'info';
 
 export type ConceptErrorTag = string;
@@ -41,6 +48,9 @@ export type MultipleChoiceStep = {
   before: RegisterState;
   after: RegisterState;
   changed: RegisterName[];
+  memoryBefore?: MemoryRow[];
+  memoryAfter?: MemoryRow[];
+  changedMemory?: string[];
   correctExplain: string;
   diagram?: string;
   options: QuestionOption[];
@@ -100,6 +110,7 @@ export type Exercise = {
   description: string;
   estimatedMinutes: number;
   initialRegisters: RegisterState;
+  initialMemory?: MemoryRow[];
   codeLines: string[];
   steps: MultipleChoiceStep[];
   passing: PassingRules;
@@ -151,12 +162,14 @@ export type ExerciseSession = {
   exerciseId: string;
   currentStepIndex: number;
   registers: RegisterState;
+  memory: MemoryRow[];
   selectedOptionId: string | null;
   failedOptionIds: string[];
   attempts: number;
   phase: ExercisePhase;
   feedback: FeedbackMessage | null;
   changed: RegisterName[];
+  changedMemory: string[];
   showCode: boolean;
   score: number;
   firstCorrect: number;
