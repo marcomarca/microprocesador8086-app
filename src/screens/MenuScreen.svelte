@@ -26,13 +26,6 @@
   </section>
 </div>
 
-<section class="card">
-  <p class="question">Selecciona un módulo y resuelve los ejercicios en orden sugerido.</p>
-  <p class="sub" style="margin-top:10px">
-    Los ejercicios bloqueados pueden abrirse manualmente con advertencia. Esa apertura no desbloquea los ejercicios siguientes.
-  </p>
-</section>
-
 {#each [...content.modules].sort((a, b) => a.order - b.order) as module}
   <section class="card module-card">
     <div class="label">{module.subtitle}</div>

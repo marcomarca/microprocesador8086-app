@@ -192,7 +192,7 @@ export function countErrors(logs: AttemptLog[]): Record<ConceptErrorTag, number>
 }
 
 export function getExerciseStatus(exercise: Exercise, score: number): string {
-  if (score >= exercise.passing.canAdvance) return 'Puede avanzar al siguiente ejercicio.';
+  if (score >= exercise.passing.canAdvance) return 'Puede avanzar al siguiente módulo.';
   if (score >= exercise.passing.reviewRecommended) return 'Puede avanzar, pero se recomienda repaso.';
   if (score >= exercise.passing.mustRepeat) return 'Debe repetir el bloque antes de continuar.';
   return 'Requiere explicación guiada o intervención docente.';

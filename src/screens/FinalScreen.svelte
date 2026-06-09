@@ -85,7 +85,7 @@
 
 <section class="card">
   <div class="label">Reporte del estudiante</div>
-  <label class="field-label" for="participant">Nombre o código del estudiante</label>
+  <label class="field-label" for="participant">Nombre o registro universitario</label>
   <input id="participant" class="text-input" bind:value={participantLabel} placeholder="Opcional" />
   <div class="split-actions">
     <button class="secondary" on:click={copyReport}>Copiar texto</button>

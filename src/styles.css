@@ -56,6 +56,58 @@ button { -webkit-tap-highlight-color: transparent; }
   margin-bottom: 10px;
 }
 
+.global-nav {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 80;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.global-nav-toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(31, 36, 48, .96);
+  color: var(--text);
+  display: grid;
+  place-content: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,.24);
+}
+
+.global-nav-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.global-nav-menu {
+  min-width: 132px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(23, 26, 33, .98);
+  padding: 8px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.28);
+}
+
+.global-nav-menu button {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--btn);
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
 h1, h2, h3, p { margin: 0; }
 
 h1 { font-size: 18px; line-height: 1.25; }

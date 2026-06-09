@@ -28,6 +28,7 @@
   let session: ExerciseSession | null = null;
   let pendingUnlock: Exercise | null = null;
   let runtimeError: string | null = null;
+  let navOpen = false;
 
   onMount(() => {
     progress = loadProgress();
@@ -47,6 +48,7 @@
 
   function openExercise(exercise: Exercise) {
     withFallback(() => {
+      navOpen = false;
       activeExercise = exercise;
       session = createInitialSession(exercise);
       screen = 'exercise';
@@ -98,6 +100,12 @@
   }
 
   function goMenu() {
+    navOpen = false;
+    screen = 'menu';
+  }
+
+  function goHomeFromNav() {
+    navOpen = false;
     screen = 'menu';
   }
 
@@ -126,6 +134,27 @@
 
 {#if progress}
   <main id="app" class="app">
+    {#if screen !== 'menu'}
+      <nav class="global-nav" aria-label="Navegación principal">
+        <button
+          class="global-nav-toggle"
+          type="button"
+          aria-label="Abrir navegación"
+          aria-expanded={navOpen}
+          on:click={() => (navOpen = !navOpen)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        {#if navOpen}
+          <div class="global-nav-menu">
+            <button type="button" on:click={goHomeFromNav}>Inicio</button>
+          </div>
+        {/if}
+      </nav>
+    {/if}
+
     {#if runtimeError}
       <section class="feedback bad">{runtimeError}</section>
     {/if}
