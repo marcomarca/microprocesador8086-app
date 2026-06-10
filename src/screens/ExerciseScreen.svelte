@@ -6,6 +6,7 @@
   import OptionButton from '../components/OptionButton.svelte';
   import ProgressBar from '../components/ProgressBar.svelte';
   import RegisterPanel from '../components/RegisterPanel.svelte';
+  import { getOrderedOptions, getVisibleOptionLabel } from '../engine/options';
 
   export let exercise: Exercise;
   export let session: ExerciseSession;
@@ -13,6 +14,7 @@
   export let onToggleCode: () => void = () => undefined;
 
   $: step = exercise.steps[session.currentStepIndex];
+  $: visibleOptions = getOrderedOptions(step, session.optionOrderByStepId);
   $: progress = Math.round(((session.currentStepIndex + 1) / exercise.steps.length) * 100);
 </script>
 
@@ -50,9 +52,10 @@
 <section class="card">
   <p class="question">{step.question}</p>
   <div class="options">
-    {#each step.options as option}
+    {#each visibleOptions as option, index}
       <OptionButton
         {option}
+        label={getVisibleOptionLabel(index)}
         selected={session.selectedOptionId === option.id}
         failed={session.failedOptionIds.includes(option.id) || (session.phase === 'complete' && session.selectedOptionId === option.id && !option.correct)}
         revealCorrect={session.phase === 'complete' && option.correct}

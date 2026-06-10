@@ -6,6 +6,7 @@
   export let failed = false;
   export let revealCorrect = false;
   export let disabled = false;
+  export let label: string | null = null;
   export let onSelect: (id: string) => void = () => undefined;
 </script>
 
@@ -17,5 +18,5 @@
   {disabled}
   on:click={() => onSelect(option.id)}
 >
-  <strong>{option.id}.</strong> {option.text}
+  <strong>{label ?? option.id}.</strong> {option.text}
 </button>

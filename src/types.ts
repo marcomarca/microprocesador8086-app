@@ -169,6 +169,7 @@ export type ExerciseSession = {
   registers: RegisterState;
   memory: MemoryRow[];
   selectedOptionId: string | null;
+  optionOrderByStepId: Record<string, string[]>;
   failedOptionIds: string[];
   attempts: number;
   phase: ExercisePhase;

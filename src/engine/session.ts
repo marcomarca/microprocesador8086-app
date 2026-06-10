@@ -11,6 +11,7 @@ import type {
   MultipleChoiceStep,
   QuestionOption
 } from '../types';
+import { createOptionOrderByStepId } from './options';
 
 function cloneMemory(memory: MemoryRow[] | undefined): MemoryRow[] {
   return (memory ?? []).map((row) => ({
@@ -28,6 +29,7 @@ export function createInitialSession(exercise: Exercise): ExerciseSession {
     registers: { ...firstStep?.before },
     memory: cloneMemory(firstStep?.memoryBefore ?? exercise.initialMemory),
     selectedOptionId: null,
+    optionOrderByStepId: createOptionOrderByStepId(exercise),
     failedOptionIds: [],
     attempts: 0,
     phase: 'answering',
