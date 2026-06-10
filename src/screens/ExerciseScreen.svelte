@@ -15,6 +15,7 @@
 
   $: step = exercise.steps[session.currentStepIndex];
   $: visibleOptions = getOrderedOptions(step, session.optionOrderByStepId);
+  $: currentFailedOptionIds = session.failedOptionIdsByStepId[step.id] ?? [];
   $: progress = Math.round(((session.currentStepIndex + 1) / exercise.steps.length) * 100);
 </script>
 
@@ -57,9 +58,9 @@
         {option}
         label={getVisibleOptionLabel(index)}
         selected={session.selectedOptionId === option.id}
-        failed={session.failedOptionIds.includes(option.id) || (session.phase === 'complete' && session.selectedOptionId === option.id && !option.correct)}
+        failed={currentFailedOptionIds.includes(option.id) || (session.phase === 'complete' && session.selectedOptionId === option.id && !option.correct)}
         revealCorrect={session.phase === 'complete' && option.correct}
-        disabled={session.phase !== 'answering' || session.failedOptionIds.includes(option.id)}
+        disabled={session.phase !== 'answering' || currentFailedOptionIds.includes(option.id)}
         onSelect={onSelectOption}
       />
     {/each}

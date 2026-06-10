@@ -31,6 +31,7 @@ export function createInitialSession(exercise: Exercise): ExerciseSession {
     selectedOptionId: null,
     optionOrderByStepId: createOptionOrderByStepId(exercise),
     failedOptionIds: [],
+    failedOptionIdsByStepId: {},
     attempts: 0,
     phase: 'answering',
     feedback: null,
@@ -51,6 +52,16 @@ export function selectOption(session: ExerciseSession, optionId: string): Exerci
   if (session.phase !== 'answering') return session;
   if (session.failedOptionIds.includes(optionId)) return session;
   return { ...session, selectedOptionId: optionId };
+}
+
+export function normalizeSessionForCurrentStep(session: ExerciseSession, exercise: Exercise): ExerciseSession {
+  const step = exercise.steps[session.currentStepIndex];
+  if (!step) return session;
+
+  return {
+    ...session,
+    failedOptionIds: [...(session.failedOptionIdsByStepId[step.id] ?? [])]
+  };
 }
 
 export function toggleCode(session: ExerciseSession): ExerciseSession {
@@ -122,6 +133,10 @@ function applyWrongAnswer(
 ): ExerciseSession {
   const log = createLog(session, step, option, false, 0);
   const failedOptionIds = unique([...session.failedOptionIds, option.id]);
+  const failedOptionIdsByStepId = {
+    ...session.failedOptionIdsByStepId,
+    [step.id]: failedOptionIds
+  };
 
   if (session.attempts === 0) {
     return {
@@ -129,6 +144,7 @@ function applyWrongAnswer(
       logs: [...session.logs, log],
       attempts: 1,
       failedOptionIds,
+      failedOptionIdsByStepId,
       selectedOptionId: null,
       phase: 'hint',
       feedback: { type: 'bad', text: `Incorrecto. ${option.hint ?? step.correctExplain}` }
@@ -140,6 +156,7 @@ function applyWrongAnswer(
     logs: [...session.logs, log],
     revealed: session.revealed + 1,
     failedOptionIds,
+    failedOptionIdsByStepId,
     registers: { ...step.after },
     memory: cloneMemory(step.memoryAfter ?? step.memoryBefore ?? session.memory),
     changed: [...step.changed],
@@ -166,7 +183,7 @@ export function nextStep(session: ExerciseSession, exercise: Exercise): Exercise
     registers: { ...next.before },
     memory: cloneMemory(next.memoryBefore ?? session.memory),
     selectedOptionId: null,
-    failedOptionIds: [],
+    failedOptionIds: [...(session.failedOptionIdsByStepId[next.id] ?? [])],
     attempts: 0,
     phase: 'answering',
     feedback: null,

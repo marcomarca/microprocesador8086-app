@@ -5,14 +5,8 @@
   import { courseContent } from './content';
   import {
     applyExerciseCompletion,
-    continueAfterHint,
-    createInitialSession,
     getExerciseById,
-    manuallyUnlockExercise,
-    nextStep,
-    selectOption,
-    submitAnswer,
-    toggleCode
+    manuallyUnlockExercise
   } from './engine/session';
   import { clearProgress, loadProgress, saveProgress } from './engine/storage';
   import ExerciseScreen from './screens/ExerciseScreen.svelte';
@@ -20,12 +14,11 @@
   import MenuScreen from './screens/MenuScreen.svelte';
   import ReviewScreen from './screens/ReviewScreen.svelte';
   import VariantScreen from './screens/VariantScreen.svelte';
-  import type { AppScreen, CourseProgress, Exercise, ExerciseSession } from './types';
+  import { exerciseSessionStore } from './stores/exerciseSession';
+  import type { AppScreen, CourseProgress, Exercise } from './types';
 
   let screen: AppScreen = 'menu';
   let progress: CourseProgress | null = null;
-  let activeExercise: Exercise | null = null;
-  let session: ExerciseSession | null = null;
   let pendingUnlock: Exercise | null = null;
   let runtimeError: string | null = null;
   let navOpen = false;
@@ -42,6 +35,7 @@
       action();
     } catch {
       runtimeError = 'Ocurrió un error inesperado. Se volvió al menú para conservar la funcionalidad.';
+      exerciseSessionStore.clearSession();
       screen = 'menu';
     }
   }
@@ -49,8 +43,7 @@
   function openExercise(exercise: Exercise) {
     withFallback(() => {
       navOpen = false;
-      activeExercise = exercise;
-      session = createInitialSession(exercise);
+      exerciseSessionStore.startExercise(exercise);
       screen = 'exercise';
       if (progress) progress = { ...progress, lastExerciseId: exercise.id, lastUpdated: new Date().toISOString() };
     });
@@ -71,53 +64,40 @@
 
   function handleSubmitOrContinue() {
     withFallback(() => {
-      if (!activeExercise || !session) return;
-
-      if (session.phase === 'answering') {
-        session = submitAnswer(session, activeExercise);
-        return;
-      }
-
-      if (session.phase === 'hint') {
-        session = continueAfterHint(session);
-        return;
-      }
-
-      if (session.currentStepIndex >= activeExercise.steps.length - 1) {
-        session = nextStep(session, activeExercise);
-        if (progress) progress = applyExerciseCompletion(progress, courseContent, activeExercise, session);
+      const completion = exerciseSessionStore.submitOrContinue();
+      if (completion) {
+        if (progress) progress = applyExerciseCompletion(progress, courseContent, completion.exercise, completion.session);
         screen = 'final';
-        return;
       }
-
-      session = nextStep(session, activeExercise);
     });
   }
 
   function restartExercise() {
-    if (!activeExercise) return;
-    openExercise(activeExercise);
+    exerciseSessionStore.restart();
+    screen = 'exercise';
   }
 
   function goMenu() {
     navOpen = false;
+    exerciseSessionStore.clearSession();
     screen = 'menu';
   }
 
   function goHomeFromNav() {
     navOpen = false;
+    exerciseSessionStore.clearSession();
     screen = 'menu';
   }
 
   function resetProgress() {
     if (!window.confirm('¿Borrar todo el progreso local de este navegador?')) return;
     progress = clearProgress();
-    activeExercise = null;
-    session = null;
+    exerciseSessionStore.clearSession();
     screen = 'menu';
   }
 
   function getActionLabel(): string {
+    const { activeExercise, session } = $exerciseSessionStore;
     if (!session || screen !== 'exercise') return 'Continuar';
     if (session.phase === 'answering') return 'Confirmar respuesta';
     if (session.phase === 'hint') return 'Intentar otra vez';
@@ -174,27 +154,27 @@
           <button class="secondary" on:click={restoreLastExercise}>Abrir último ejercicio</button>
         </section>
       {/if}
-    {:else if screen === 'exercise' && activeExercise && session}
+    {:else if screen === 'exercise' && $exerciseSessionStore.activeExercise && $exerciseSessionStore.session}
       <ExerciseScreen
-        exercise={activeExercise}
-        {session}
-        onSelectOption={(id) => (session = selectOption(session as ExerciseSession, id))}
-        onToggleCode={() => (session = toggleCode(session as ExerciseSession))}
+        exercise={$exerciseSessionStore.activeExercise}
+        session={$exerciseSessionStore.session}
+        onSelectOption={exerciseSessionStore.selectOption}
+        onToggleCode={exerciseSessionStore.toggleCode}
       />
-    {:else if screen === 'final' && activeExercise && session}
+    {:else if screen === 'final' && $exerciseSessionStore.activeExercise && $exerciseSessionStore.session}
       <FinalScreen
         content={courseContent}
-        exercise={activeExercise}
-        {session}
+        exercise={$exerciseSessionStore.activeExercise}
+        session={$exerciseSessionStore.session}
         onReview={() => (screen = 'review')}
         onVariant={() => (screen = 'variant')}
         onRestart={restartExercise}
         onMenu={goMenu}
       />
-    {:else if screen === 'review' && activeExercise}
-      <ReviewScreen exercise={activeExercise} onBack={() => (screen = 'final')} />
-    {:else if screen === 'variant' && activeExercise}
-      <VariantScreen exercise={activeExercise} onBack={() => (screen = 'final')} />
+    {:else if screen === 'review' && $exerciseSessionStore.activeExercise}
+      <ReviewScreen exercise={$exerciseSessionStore.activeExercise} onBack={() => (screen = 'final')} />
+    {:else if screen === 'variant' && $exerciseSessionStore.activeExercise}
+      <VariantScreen exercise={$exerciseSessionStore.activeExercise} onBack={() => (screen = 'final')} />
     {:else}
       <section class="card" style="margin-top:16px">
         <h1>Estado no recuperable</h1>

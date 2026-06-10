@@ -171,6 +171,7 @@ export type ExerciseSession = {
   selectedOptionId: string | null;
   optionOrderByStepId: Record<string, string[]>;
   failedOptionIds: string[];
+  failedOptionIdsByStepId: Record<string, string[]>;
   attempts: number;
   phase: ExercisePhase;
   feedback: FeedbackMessage | null;

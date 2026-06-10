@@ -11,7 +11,7 @@ export function getOrderedOptions(
   optionOrderByStepId: Record<string, string[]> | undefined
 ): QuestionOption[] {
   const order = optionOrderByStepId?.[step.id];
-  if (!order || order.length !== step.options.length) return step.options;
+  if (!order || !hasSameOptionIds(order, step.options)) return step.options;
 
   const optionsById = new Map(step.options.map((option) => [option.id, option]));
   const orderedOptions = order.map((id) => optionsById.get(id));
@@ -33,4 +33,14 @@ function shuffle<T>(items: T[]): T[] {
   }
 
   return result;
+}
+
+function hasSameOptionIds(order: string[], options: QuestionOption[]): boolean {
+  if (order.length !== options.length) return false;
+
+  const optionIds = new Set(options.map((option) => option.id));
+  const orderIds = new Set(order);
+
+  if (orderIds.size !== optionIds.size) return false;
+  return order.every((id) => optionIds.has(id));
 }
