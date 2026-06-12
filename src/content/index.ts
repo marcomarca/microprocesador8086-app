@@ -7,6 +7,7 @@ import { errorCatalog } from './errorCatalog';
 import { indirectIndexedExercise } from './indirectIndexed';
 import { loopAccumulatorExercise } from './loopAccumulator';
 import { movBasicExercise } from './movBasic';
+import { movTheory1 } from './movTheory1';
 import { stackLifoExercise } from './stackLifo';
 
 export const courseContent: CourseContent = {
@@ -20,7 +21,10 @@ export const courseContent: CourseContent = {
     order: 1,
     title: "Módulo 1 · MOV",
     subtitle: "Transferencia entre registros",
-    description: "Primer bloque de práctica sobre MOV, registros completos y registros parciales.",
+    description: "Primer bloque de teoría y práctica sobre MOV, registros completos y registros parciales.",
+    theoryIds: [
+      "theory_mov_01"
+    ],
     exerciseIds: [
       "mov_basic_01"
     ]
@@ -96,5 +100,6 @@ export const courseContent: CourseContent = {
     ]
   }
 ],
+  theories: [movTheory1],
   exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };

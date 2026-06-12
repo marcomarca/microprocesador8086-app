@@ -5,8 +5,11 @@ import type {
   CourseProgress,
   Exercise,
   ExerciseAccess,
+  ExerciseAction,
   ExerciseResultSummary,
   ExerciseSession,
+  TheoryAccess,
+  TheoryLesson,
   MemoryRow,
   MultipleChoiceStep,
   QuestionOption
@@ -66,6 +69,21 @@ export function normalizeSessionForCurrentStep(session: ExerciseSession, exercis
 
 export function toggleCode(session: ExerciseSession): ExerciseSession {
   return { ...session, showCode: !session.showCode };
+}
+
+export function getExerciseAction(session: ExerciseSession, exercise: Exercise): ExerciseAction {
+  if (session.phase === 'answering') {
+    return { type: 'submit', label: 'Confirmar respuesta', disabled: false };
+  }
+
+  if (session.phase === 'hint') {
+    return { type: 'retry', label: 'Intentar otra vez', disabled: false };
+  }
+
+  const isLastStep = session.currentStepIndex >= exercise.steps.length - 1;
+  return isLastStep
+    ? { type: 'finish', label: 'Ver resultado', disabled: false }
+    : { type: 'next', label: 'Siguiente paso', disabled: false };
 }
 
 export function continueAfterHint(session: ExerciseSession): ExerciseSession {
@@ -256,39 +274,96 @@ function createLog(
 
 export function createInitialProgress(): CourseProgress {
   return {
-    version: 1,
+    version: 2,
     routeCursor: 0,
+    completedTheoryIds: [],
+    manualUnlockedTheoryIds: [],
     completedExerciseIds: [],
     manualUnlockedExerciseIds: [],
     exerciseResults: {},
     diagnostics: {},
     lastExerciseId: null,
+    lastTheoryId: null,
     lastUpdated: new Date().toISOString()
   };
 }
 
-export function flattenExerciseOrder(content: CourseContent): string[] {
+type RouteUnit =
+  | { type: 'theory'; id: string; moduleOrder: number; order: number }
+  | { type: 'exercise'; id: string; moduleOrder: number; order: number };
+
+export function flattenCourseUnitOrder(content: CourseContent): RouteUnit[] {
   const moduleOrder = [...content.modules].sort((a, b) => a.order - b.order);
-  const ids: string[] = [];
+  const units: RouteUnit[] = [];
 
   for (const module of moduleOrder) {
+    const theories = (module.theoryIds ?? [])
+      .map((id) => content.theories.find((theory) => theory.id === id))
+      .filter((theory): theory is TheoryLesson => Boolean(theory))
+      .map((theory) => ({ type: 'theory' as const, id: theory.id, moduleOrder: module.order, order: theory.order }));
+
     const exercises = module.exerciseIds
       .map((id) => content.exercises.find((exercise) => exercise.id === id))
       .filter((exercise): exercise is Exercise => Boolean(exercise))
-      .sort((a, b) => a.order - b.order);
+      .map((exercise) => ({ type: 'exercise' as const, id: exercise.id, moduleOrder: module.order, order: exercise.order }));
 
-    ids.push(...exercises.map((exercise) => exercise.id));
+    units.push(
+      ...[...theories, ...exercises].sort((a, b) => a.order - b.order || (a.type === 'theory' ? -1 : 1))
+    );
   }
 
-  return ids;
+  return units;
+}
+
+export function flattenExerciseOrder(content: CourseContent): string[] {
+  return flattenCourseUnitOrder(content)
+    .filter((unit) => unit.type === 'exercise')
+    .map((unit) => unit.id);
+}
+
+function isRouteUnitCompleted(unit: RouteUnit, progress: CourseProgress): boolean {
+  if (unit.type === 'theory') return progress.completedTheoryIds.includes(unit.id);
+  return progress.completedExerciseIds.includes(unit.id);
+}
+
+function calculateRouteCursor(content: CourseContent, progress: CourseProgress): number {
+  const order = flattenCourseUnitOrder(content);
+  let routeCursor = progress.routeCursor;
+
+  while (routeCursor < order.length && isRouteUnitCompleted(order[routeCursor], progress)) {
+    routeCursor += 1;
+  }
+
+  return routeCursor;
+}
+
+export function getTheoryAccess(content: CourseContent, progress: CourseProgress, theoryId: string): TheoryAccess {
+  const order = flattenCourseUnitOrder(content);
+  const index = order.findIndex((unit) => unit.type === 'theory' && unit.id === theoryId);
+  const completed = progress.completedTheoryIds.includes(theoryId);
+  const manualUnlocked = progress.manualUnlockedTheoryIds.includes(theoryId);
+  const unlocked = completed || manualUnlocked || (index >= 0 && index <= progress.routeCursor);
+
+  return {
+    theoryId,
+    index,
+    completed,
+    unlocked,
+    manualUnlocked,
+    lockedReason: unlocked ? null : 'Esta teoría está fuera de la ruta sugerida.'
+  };
 }
 
 export function getExerciseAccess(content: CourseContent, progress: CourseProgress, exerciseId: string): ExerciseAccess {
-  const order = flattenExerciseOrder(content);
-  const index = order.indexOf(exerciseId);
+  const order = flattenCourseUnitOrder(content);
+  const index = order.findIndex((unit) => unit.type === 'exercise' && unit.id === exerciseId);
+  const exercise = content.exercises.find((item) => item.id === exerciseId) ?? null;
   const completed = progress.completedExerciseIds.includes(exerciseId);
   const manualUnlocked = progress.manualUnlockedExerciseIds.includes(exerciseId);
-  const unlocked = completed || manualUnlocked || index <= progress.routeCursor;
+  const routeUnlocked = index >= 0 && index <= progress.routeCursor;
+  const requiredTheoryId = exercise?.requiredTheoryId ?? null;
+  const theoryCompleted = !requiredTheoryId || progress.completedTheoryIds.includes(requiredTheoryId);
+  const unlocked = completed || manualUnlocked || (routeUnlocked && theoryCompleted);
 
   return {
     exerciseId,
@@ -296,7 +371,19 @@ export function getExerciseAccess(content: CourseContent, progress: CourseProgre
     completed,
     unlocked,
     manualUnlocked,
-    lockedReason: unlocked ? null : 'Este ejercicio está fuera de la ruta sugerida.'
+    lockedReason: unlocked
+      ? null
+      : !theoryCompleted
+        ? 'Completa la teoría asociada antes de abrir este ejercicio.'
+        : 'Este ejercicio está fuera de la ruta sugerida.'
+  };
+}
+
+export function manuallyUnlockTheory(progress: CourseProgress, theoryId: string): CourseProgress {
+  return {
+    ...progress,
+    manualUnlockedTheoryIds: unique([...progress.manualUnlockedTheoryIds, theoryId]),
+    lastUpdated: new Date().toISOString()
   };
 }
 
@@ -305,6 +392,24 @@ export function manuallyUnlockExercise(progress: CourseProgress, exerciseId: str
     ...progress,
     manualUnlockedExerciseIds: unique([...progress.manualUnlockedExerciseIds, exerciseId]),
     lastUpdated: new Date().toISOString()
+  };
+}
+
+export function applyTheoryCompletion(
+  progress: CourseProgress,
+  content: CourseContent,
+  theory: TheoryLesson
+): CourseProgress {
+  const nextProgress: CourseProgress = {
+    ...progress,
+    completedTheoryIds: unique([...progress.completedTheoryIds, theory.id]),
+    lastTheoryId: theory.id,
+    lastUpdated: new Date().toISOString()
+  };
+
+  return {
+    ...nextProgress,
+    routeCursor: calculateRouteCursor(content, nextProgress)
   };
 }
 
@@ -322,15 +427,8 @@ export function applyExerciseCompletion(
     diagnostics[tag] = (diagnostics[tag] ?? 0) + count;
   }
 
-  const order = flattenExerciseOrder(content);
-  let routeCursor = progress.routeCursor;
-  while (routeCursor < order.length && completedExerciseIds.includes(order[routeCursor])) {
-    routeCursor += 1;
-  }
-
-  return {
+  const nextProgress: CourseProgress = {
     ...progress,
-    routeCursor,
     completedExerciseIds,
     diagnostics,
     lastExerciseId: exercise.id,
@@ -339,6 +437,11 @@ export function applyExerciseCompletion(
       [exercise.id]: result
     },
     lastUpdated: new Date().toISOString()
+  };
+
+  return {
+    ...nextProgress,
+    routeCursor: calculateRouteCursor(content, nextProgress)
   };
 }
 

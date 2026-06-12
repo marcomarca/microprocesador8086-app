@@ -8,6 +8,7 @@ export const movBasicExercise: Exercise = {
   subtitle: 'Transferencia entre registros · 8086',
   description: 'Predice el efecto de instrucciones MOV sobre registros completos y parciales.',
   estimatedMinutes: 8,
+  requiredTheoryId: 'theory_mov_01',
   initialRegisters: { AX: '0000', BX: '0000', CX: '0000', DX: '0000' },
   passing: {
     canAdvance: 5,

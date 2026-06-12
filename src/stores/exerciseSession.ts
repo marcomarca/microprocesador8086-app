@@ -3,6 +3,7 @@ import type { Exercise, ExerciseSession } from '../types';
 import {
   continueAfterHint,
   createInitialSession,
+  getExerciseAction,
   nextStep,
   normalizeSessionForCurrentStep,
   selectOption,
@@ -56,14 +57,15 @@ function createExerciseSessionStore() {
     const { activeExercise, session } = state;
     if (!activeExercise || !session) return null;
     const currentSession = normalizeSessionForCurrentStep(session, activeExercise);
+    const action = getExerciseAction(currentSession, activeExercise);
 
-    if (currentSession.phase === 'answering') {
+    if (action.type === 'submit') {
       const nextSession = submitAnswer(currentSession, activeExercise);
       set({ activeExercise, session: nextSession });
       return null;
     }
 
-    if (currentSession.phase === 'hint') {
+    if (action.type === 'retry') {
       const nextSession = continueAfterHint(currentSession);
       set({ activeExercise, session: nextSession });
       return null;
@@ -72,7 +74,7 @@ function createExerciseSessionStore() {
     const nextSession = nextStep(currentSession, activeExercise);
     set({ activeExercise, session: nextSession });
 
-    if (currentSession.currentStepIndex >= activeExercise.steps.length - 1) {
+    if (action.type === 'finish') {
       return { exercise: activeExercise, session: nextSession };
     }
 

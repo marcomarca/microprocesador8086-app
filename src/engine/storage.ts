@@ -1,6 +1,7 @@
 import { appConfig } from '../content/appConfig';
+import { courseContent } from '../content';
 import type { CourseProgress } from '../types';
-import { createInitialProgress } from './session';
+import { createInitialProgress, flattenCourseUnitOrder } from './session';
 
 export function loadProgress(): CourseProgress {
   try {
@@ -32,16 +33,41 @@ export function clearProgress(): CourseProgress {
 
 function normalizeProgress(progress: Partial<CourseProgress>): CourseProgress {
   const clean = createInitialProgress();
-  return {
+  const completedExerciseIds = Array.isArray(progress.completedExerciseIds) ? progress.completedExerciseIds : [];
+  const completedTheoryIds = Array.isArray(progress.completedTheoryIds) ? [...progress.completedTheoryIds] : [];
+
+  for (const exercise of courseContent.exercises) {
+    if (!exercise.requiredTheoryId) continue;
+    if (!completedExerciseIds.includes(exercise.id)) continue;
+    if (!completedTheoryIds.includes(exercise.requiredTheoryId)) completedTheoryIds.push(exercise.requiredTheoryId);
+  }
+
+  const normalized: CourseProgress = {
     ...clean,
     ...progress,
-    completedExerciseIds: Array.isArray(progress.completedExerciseIds) ? progress.completedExerciseIds : [],
+    completedTheoryIds,
+    manualUnlockedTheoryIds: Array.isArray(progress.manualUnlockedTheoryIds) ? progress.manualUnlockedTheoryIds : [],
+    completedExerciseIds,
     manualUnlockedExerciseIds: Array.isArray(progress.manualUnlockedExerciseIds)
       ? progress.manualUnlockedExerciseIds
       : [],
     exerciseResults: progress.exerciseResults ?? {},
     diagnostics: progress.diagnostics ?? {},
-    routeCursor: typeof progress.routeCursor === 'number' ? progress.routeCursor : 0,
-    version: 1
+    routeCursor: 0,
+    lastExerciseId: progress.lastExerciseId ?? null,
+    lastTheoryId: progress.lastTheoryId ?? null,
+    version: 2
   };
+
+  const routeOrder = flattenCourseUnitOrder(courseContent);
+  while (normalized.routeCursor < routeOrder.length) {
+    const unit = routeOrder[normalized.routeCursor];
+    const completed = unit.type === 'theory'
+      ? normalized.completedTheoryIds.includes(unit.id)
+      : normalized.completedExerciseIds.includes(unit.id);
+    if (!completed) break;
+    normalized.routeCursor += 1;
+  }
+
+  return normalized;
 }

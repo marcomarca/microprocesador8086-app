@@ -5,6 +5,8 @@
   import { courseContent } from './content';
   import {
     applyExerciseCompletion,
+    applyTheoryCompletion,
+    getExerciseAction,
     getExerciseById,
     manuallyUnlockExercise
   } from './engine/session';
@@ -13,13 +15,15 @@
   import FinalScreen from './screens/FinalScreen.svelte';
   import MenuScreen from './screens/MenuScreen.svelte';
   import ReviewScreen from './screens/ReviewScreen.svelte';
+  import TheoryScreen from './screens/TheoryScreen.svelte';
   import VariantScreen from './screens/VariantScreen.svelte';
   import { exerciseSessionStore } from './stores/exerciseSession';
-  import type { AppScreen, CourseProgress, Exercise } from './types';
+  import type { AppScreen, CourseProgress, Exercise, TheoryLesson } from './types';
 
   let screen: AppScreen = 'menu';
   let progress: CourseProgress | null = null;
   let pendingUnlock: Exercise | null = null;
+  let activeTheory: TheoryLesson | null = null;
   let runtimeError: string | null = null;
   let navOpen = false;
 
@@ -40,13 +44,38 @@
     }
   }
 
+  function openTheory(theory: TheoryLesson) {
+    withFallback(() => {
+      navOpen = false;
+      exerciseSessionStore.clearSession();
+      activeTheory = theory;
+      screen = 'theory';
+      if (progress) progress = { ...progress, lastTheoryId: theory.id, lastUpdated: new Date().toISOString() };
+    });
+  }
+
   function openExercise(exercise: Exercise) {
     withFallback(() => {
       navOpen = false;
+      activeTheory = null;
       exerciseSessionStore.startExercise(exercise);
       screen = 'exercise';
       if (progress) progress = { ...progress, lastExerciseId: exercise.id, lastUpdated: new Date().toISOString() };
     });
+  }
+
+  function completeTheory(theory: TheoryLesson) {
+    if (!progress) return;
+    progress = applyTheoryCompletion(progress, courseContent, theory);
+  }
+
+  function startExerciseFromTheory(exerciseId: string) {
+    if (!activeTheory) return;
+    if (progress && !progress.completedTheoryIds.includes(activeTheory.id)) {
+      progress = applyTheoryCompletion(progress, courseContent, activeTheory);
+    }
+    const exercise = getExerciseById(courseContent, exerciseId);
+    if (exercise) openExercise(exercise);
   }
 
   function requestUnlock(exercise: Exercise) {
@@ -80,12 +109,14 @@
   function goMenu() {
     navOpen = false;
     exerciseSessionStore.clearSession();
+    activeTheory = null;
     screen = 'menu';
   }
 
   function goHomeFromNav() {
     navOpen = false;
     exerciseSessionStore.clearSession();
+    activeTheory = null;
     screen = 'menu';
   }
 
@@ -93,17 +124,14 @@
     if (!window.confirm('¿Borrar todo el progreso local de este navegador?')) return;
     progress = clearProgress();
     exerciseSessionStore.clearSession();
+    activeTheory = null;
     screen = 'menu';
   }
 
-  function getActionLabel(): string {
-    const { activeExercise, session } = $exerciseSessionStore;
-    if (!session || screen !== 'exercise') return 'Continuar';
-    if (session.phase === 'answering') return 'Confirmar respuesta';
-    if (session.phase === 'hint') return 'Intentar otra vez';
-    if (!activeExercise) return 'Continuar';
-    return session.currentStepIndex >= activeExercise.steps.length - 1 ? 'Ver resultado' : 'Siguiente paso';
-  }
+  $: exerciseAction =
+    screen === 'exercise' && $exerciseSessionStore.activeExercise && $exerciseSessionStore.session
+      ? getExerciseAction($exerciseSessionStore.session, $exerciseSessionStore.activeExercise)
+      : null;
 
   function restoreLastExercise() {
     if (!progress) return;
@@ -143,6 +171,7 @@
       <MenuScreen
         content={courseContent}
         {progress}
+        onOpenTheory={openTheory}
         onOpenExercise={openExercise}
         onRequestUnlock={requestUnlock}
         onClearProgress={resetProgress}
@@ -154,6 +183,13 @@
           <button class="secondary" on:click={restoreLastExercise}>Abrir último ejercicio</button>
         </section>
       {/if}
+    {:else if screen === 'theory' && activeTheory}
+      <TheoryScreen
+        theory={activeTheory}
+        completed={progress.completedTheoryIds.includes(activeTheory.id)}
+        onComplete={completeTheory}
+        onStartExercise={startExerciseFromTheory}
+      />
     {:else if screen === 'exercise' && $exerciseSessionStore.activeExercise && $exerciseSessionStore.session}
       <ExerciseScreen
         exercise={$exerciseSessionStore.activeExercise}
@@ -185,7 +221,11 @@
   </main>
 
   {#if screen === 'exercise'}
-    <BottomAction label={getActionLabel()} onPrimary={handleSubmitOrContinue} />
+    <BottomAction
+      label={exerciseAction?.label ?? 'Confirmar respuesta'}
+      disabled={exerciseAction?.disabled ?? true}
+      onPrimary={handleSubmitOrContinue}
+    />
   {/if}
 
   <UnlockDialog exercise={pendingUnlock} onCancel={() => (pendingUnlock = null)} onConfirm={confirmUnlock} />

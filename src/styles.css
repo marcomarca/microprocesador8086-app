@@ -508,3 +508,12 @@ pre {
 @media (min-width: 700px) {
   .app, .bottom-inner { max-width: 560px; }
 }
+
+.theory-item {
+  border-color: rgba(244,197,66,.42);
+  background: rgba(244,197,66,.09);
+}
+
+.exercise-item:disabled {
+  cursor: not-allowed;
+}

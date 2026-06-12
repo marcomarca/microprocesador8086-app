@@ -45,6 +45,7 @@ const exerciseSchema = z.object({
   subtitle: z.string().min(1),
   description: z.string().min(1),
   estimatedMinutes: z.number().int().positive(),
+  requiredTheoryId: z.string().min(1).optional(),
   initialRegisters: registerStateSchema,
   initialMemory: z.array(memoryRowSchema).optional(),
   codeLines: z.array(z.string()).min(1),
@@ -58,12 +59,25 @@ const exerciseSchema = z.object({
   variant: z.unknown().optional()
 });
 
+const theorySchema = z.object({
+  id: z.string().min(1),
+  moduleId: z.string().min(1),
+  order: z.number().int().positive(),
+  title: z.string().min(1),
+  subtitle: z.string().min(1),
+  description: z.string().min(1),
+  estimatedMinutes: z.number().int().positive(),
+  audioFile: z.string().min(1),
+  unlockExerciseId: z.string().min(1)
+});
+
 const moduleSchema = z.object({
   id: z.string().min(1),
   order: z.number().int().positive(),
   title: z.string().min(1),
   subtitle: z.string().min(1),
   description: z.string().min(1),
+  theoryIds: z.array(z.string()).optional(),
   exerciseIds: z.array(z.string()).min(1)
 });
 
@@ -72,6 +86,7 @@ const courseSchema = z.object({
   subtitle: z.string().min(1),
   version: z.string().min(1),
   modules: z.array(moduleSchema).min(1),
+  theories: z.array(theorySchema),
   exercises: z.array(exerciseSchema).min(1),
   errorCatalog: z.record(z.string(), z.string())
 });
@@ -86,9 +101,16 @@ export function validateCourseContent(content: CourseContent): string[] {
   }
 
   const exerciseIds = new Set(content.exercises.map((exercise) => exercise.id));
+  const theoryIds = new Set(content.theories.map((theory) => theory.id));
   const moduleIds = new Set(content.modules.map((module) => module.id));
 
   for (const module of content.modules) {
+    for (const theoryId of module.theoryIds ?? []) {
+      if (!theoryIds.has(theoryId)) {
+        errors.push(`Module ${module.id} references missing theory ${theoryId}.`);
+      }
+    }
+
     for (const exerciseId of module.exerciseIds) {
       if (!exerciseIds.has(exerciseId)) {
         errors.push(`Module ${module.id} references missing exercise ${exerciseId}.`);
@@ -96,9 +118,28 @@ export function validateCourseContent(content: CourseContent): string[] {
     }
   }
 
+  for (const theory of content.theories) {
+    if (!moduleIds.has(theory.moduleId)) {
+      errors.push(`Theory ${theory.id} references missing module ${theory.moduleId}.`);
+    }
+
+    if (!exerciseIds.has(theory.unlockExerciseId)) {
+      errors.push(`Theory ${theory.id} unlocks missing exercise ${theory.unlockExerciseId}.`);
+    }
+
+    const module = content.modules.find((item) => item.id === theory.moduleId);
+    if (module && !(module.theoryIds ?? []).includes(theory.id)) {
+      errors.push(`Theory ${theory.id} is not listed in module ${module.id}.theoryIds.`);
+    }
+  }
+
   for (const exercise of content.exercises) {
     if (!moduleIds.has(exercise.moduleId)) {
       errors.push(`Exercise ${exercise.id} references missing module ${exercise.moduleId}.`);
+    }
+
+    if (exercise.requiredTheoryId && !theoryIds.has(exercise.requiredTheoryId)) {
+      errors.push(`Exercise ${exercise.id} requires missing theory ${exercise.requiredTheoryId}.`);
     }
 
     const module = content.modules.find((item) => item.id === exercise.moduleId);

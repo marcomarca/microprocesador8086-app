@@ -114,6 +114,7 @@ export type Exercise = {
   subtitle: string;
   description: string;
   estimatedMinutes: number;
+  requiredTheoryId?: string;
   initialRegisters: RegisterState;
   initialMemory?: MemoryRow[];
   codeLines: string[];
@@ -123,12 +124,25 @@ export type Exercise = {
   variant?: VariantQuestion;
 };
 
+export type TheoryLesson = {
+  id: string;
+  moduleId: string;
+  order: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  estimatedMinutes: number;
+  audioFile: string;
+  unlockExerciseId: string;
+};
+
 export type CourseModule = {
   id: string;
   order: number;
   title: string;
   subtitle: string;
   description: string;
+  theoryIds?: string[];
   exerciseIds: string[];
 };
 
@@ -137,12 +151,20 @@ export type CourseContent = {
   subtitle: string;
   version: string;
   modules: CourseModule[];
+  theories: TheoryLesson[];
   exercises: Exercise[];
   errorCatalog: Record<ConceptErrorTag, string>;
 };
 
-export type AppScreen = 'menu' | 'exercise' | 'final' | 'review' | 'variant';
+export type AppScreen = 'menu' | 'theory' | 'exercise' | 'final' | 'review' | 'variant';
 export type ExercisePhase = 'answering' | 'hint' | 'complete';
+export type ExerciseActionType = 'submit' | 'retry' | 'next' | 'finish';
+
+export type ExerciseAction = {
+  type: ExerciseActionType;
+  label: 'Confirmar respuesta' | 'Intentar otra vez' | 'Siguiente paso' | 'Ver resultado';
+  disabled: boolean;
+};
 
 export type FeedbackMessage = {
   type: FeedbackType;
@@ -203,12 +225,24 @@ export type ExerciseResultSummary = {
 export type CourseProgress = {
   version: number;
   routeCursor: number;
+  completedTheoryIds: string[];
+  manualUnlockedTheoryIds: string[];
   completedExerciseIds: string[];
   manualUnlockedExerciseIds: string[];
   exerciseResults: Record<string, ExerciseResultSummary>;
   diagnostics: Record<ConceptErrorTag, number>;
   lastExerciseId: string | null;
+  lastTheoryId: string | null;
   lastUpdated: string;
+};
+
+export type TheoryAccess = {
+  theoryId: string;
+  index: number;
+  completed: boolean;
+  unlocked: boolean;
+  manualUnlocked: boolean;
+  lockedReason: string | null;
 };
 
 export type ExerciseAccess = {

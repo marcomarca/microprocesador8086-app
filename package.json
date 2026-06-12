@@ -10,6 +10,7 @@
     "build:github": "npm run build",
     "build:single": "npm run validate:content && vite build --mode singlefile --outDir dist-single",
     "preview": "vite preview",
+    "test": "vitest run",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "validate:content": "tsx scripts/validate-content.ts"
   },
@@ -24,6 +25,7 @@
     "vite": "latest",
     "vite-plugin-singlefile": "latest",
     "tsx": "latest",
-    "@types/node": "latest"
+    "@types/node": "latest",
+    "vitest": "latest"
   }
 }

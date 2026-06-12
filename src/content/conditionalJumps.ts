@@ -1,4 +1,4 @@
-import type { Exercise } from '../types';
+import type { Exercise, MemoryRow, MultipleChoiceStep } from '../types';
 
 const codeLines = [
       "A: DW 0x0005",
@@ -30,9 +30,9 @@ const codeLines = [
       "print mem 0:8"
     ];
 
-    function getCodeLinesForStep(step) {
-      const a = step.memoryBefore.find(row => row.label === "A").word;
-      const b = step.memoryBefore.find(row => row.label === "B").word;
+    function getCodeLinesForStep(step: MultipleChoiceStep) {
+      const a = step.memoryBefore?.find((row: MemoryRow) => row.label === "A")?.word ?? "0000";
+      const b = step.memoryBefore?.find((row: MemoryRow) => row.label === "B")?.word ?? "0000";
 
       return [
         `A: DW 0x${a}`,
