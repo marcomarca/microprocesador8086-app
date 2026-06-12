@@ -415,7 +415,6 @@
       <section class="card hero">
         <div class="eyebrow">Microprocesadores · Ensamblador 8086</div>
         <h1>Teoría 1 · MOV en 8086</h1>
-        <p class="sub">Audio sincronizado con diapositivas minimalistas.</p>
 
         <div class="progress-shell">
           <div id="progressBar" class="progress-bar"></div>
@@ -772,13 +771,6 @@
       font-size: 19px;
       line-height: 1.15;
       letter-spacing: -.02em;
-    }
-
-    .sub {
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
     }
 
     .progress-shell {

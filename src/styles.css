@@ -455,11 +455,24 @@ pre {
 
 .status-chip {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   border-radius: 999px;
   border: 1px solid var(--line);
   padding: 6px 8px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.status-icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .status-chip.done {
@@ -507,11 +520,6 @@ pre {
 
 @media (min-width: 700px) {
   .app, .bottom-inner { max-width: 560px; }
-}
-
-.theory-item {
-  border-color: rgba(244,197,66,.42);
-  background: rgba(244,197,66,.09);
 }
 
 .exercise-item:disabled {

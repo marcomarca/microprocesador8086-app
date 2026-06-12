@@ -64,7 +64,7 @@ const theorySchema = z.object({
   moduleId: z.string().min(1),
   order: z.number().int().positive(),
   title: z.string().min(1),
-  subtitle: z.string().min(1),
+  subtitle: z.string(),
   description: z.string().min(1),
   estimatedMinutes: z.number().int().positive(),
   audioFile: z.string().min(1),

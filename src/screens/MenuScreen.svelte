@@ -73,7 +73,7 @@
           >
             <div>
               <strong>{theory.title}</strong>
-              <span>{theory.subtitle}</span>
+              {#if theory.subtitle}<span>{theory.subtitle}</span>{/if}
               <em>{theory.description}</em>
             </div>
             <div class="status-chip" class:done={access.completed} class:manual={access.manualUnlocked && !access.completed}>
@@ -82,6 +82,9 @@
               {:else if access.unlocked}
                 Disponible
               {:else}
+                <svg class="status-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 10V7a5 5 0 0 1 10 0v3M6 10h12v10H6z" />
+                </svg>
                 Bloqueada
               {/if}
             </div>
@@ -96,8 +99,6 @@
               <span>{exercise.subtitle}</span>
               {#if result}
                 <em>{result.score.toFixed(1)} / {result.maxScore} · {result.status}</em>
-              {:else if !access.unlocked && access.lockedReason}
-                <em>{access.lockedReason}</em>
               {/if}
             </div>
             <div class="status-chip" class:done={access.completed} class:manual={access.manualUnlocked && !access.completed}>
@@ -106,6 +107,9 @@
               {:else if access.unlocked}
                 Disponible
               {:else}
+                <svg class="status-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 10V7a5 5 0 0 1 10 0v3M6 10h12v10H6z" />
+                </svg>
                 Bloqueado
               {/if}
             </div>
