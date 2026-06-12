@@ -68,6 +68,7 @@
           <button
             class="exercise-item theory-item"
             class:locked={!access.unlocked}
+            class:recommended={access.unlocked && !access.completed && access.index === progress.routeCursor}
             disabled={!access.unlocked}
             on:click={() => openTheory(theory)}
           >
@@ -93,7 +94,12 @@
           {@const exercise = item.exercise}
           {@const access = getExerciseAccess(content, progress, exercise.id)}
           {@const result = progress.exerciseResults[exercise.id]}
-          <button class="exercise-item" class:locked={!access.unlocked} on:click={() => openExercise(exercise)}>
+          <button
+            class="exercise-item"
+            class:locked={!access.unlocked}
+            class:recommended={access.unlocked && !access.completed && access.index === progress.routeCursor}
+            on:click={() => openExercise(exercise)}
+          >
             <div>
               <strong>{exercise.title}</strong>
               <span>{exercise.subtitle}</span>
