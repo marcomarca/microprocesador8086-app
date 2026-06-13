@@ -13,6 +13,7 @@
 
   onMount(() => {
     const rootElement = root;
+    const audioFile = theory.audioFile;
     let completionReported = completed;
     function requireElement(selector) {
       const element = rootElement.querySelector(selector);
@@ -339,11 +340,6 @@ let rafId = null;
     cancelAnimationFrame(rafId);
   }
 
-  function resolvePublicAsset(assetPath: string) {
-    const normalizedPath = assetPath.replace(/^\/+/, '');
-    return new URL(normalizedPath, document.baseURI).href;
-  }
-
   function showAudioError(error) {
     const codes = { 1: "MEDIA_ERR_ABORTED", 2: "MEDIA_ERR_NETWORK", 3: "MEDIA_ERR_DECODE", 4: "MEDIA_ERR_SRC_NOT_SUPPORTED" };
     const mediaError = audio.error;
@@ -371,7 +367,7 @@ let rafId = null;
     if (cue) { audio.currentTime = cue.start; update(); }
   }
 
-  audio.src = resolvePublicAsset(theory.audioFile);
+  audio.src = new URL(audioFile, window.location.href).href;
   audio.load();
   playBtn.addEventListener("click", handlePlayClick);
   resetBtn.addEventListener("click", restart);
@@ -428,7 +424,7 @@ let rafId = null;
 </header>
 
 <section class="slide-stage">
-<article class="card slide" data-slide="slide-1">
+<article class="card slide is-active" data-slide="slide-1">
 <div class="slide-head"><div><div class="slide-kicker">Paso 1</div><h2 class="slide-title">Datos <span>en memoria</span></h2></div><div class="slide-number">1 / 11</div></div>
 <div class="sim-stack">
   <div class="concept-card" data-hotspot="mem-memory"><div class="concept-label">Idea central</div><div class="concept-main">Los datos también pueden vivir en memoria</div><p class="concept-note">No todo valor tiene que estar dentro de un registro.</p></div>
@@ -616,11 +612,11 @@ let rafId = null;
 <button aria-label="Reiniciar" class="secondary" id="resetBtn" type="button">↺</button>
 </div>
 <button class="primary final-action" id="practiceBtn" type="button">Iniciar práctica</button>
-<div class="status-line" id="statusLine">Audio local esperado: <span class="mono">teoria2.mp3</span></div>
+<div class="status-line" id="statusLine">Audio esperado: <strong>{theory.audioFile}</strong></div>
 </div>
 </footer>
 
-<audio id="audio" preload="metadata"></audio>
+<audio id="audio" preload="metadata" src={theory.audioFile}></audio>
 
 
 </div>
