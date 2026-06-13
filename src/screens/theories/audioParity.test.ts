@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { memoryDwTheory2 } from '../../content/memoryDwTheory2';
 import { indirectTheory3 } from '../../content/indirectTheory3';
+import { arithmeticFlagsTheory4 } from '../../content/arithmeticFlagsTheory4';
 
 const theory1Source = readFileSync(
   new URL('./MovTheoryScreen.svelte', import.meta.url),
@@ -15,6 +16,10 @@ const theory3Source = readFileSync(
   new URL('./IndirectIndexedTheoryScreen.svelte', import.meta.url),
   'utf8'
 );
+const theory4Source = readFileSync(
+  new URL('./ArithmeticFlagsTheoryScreen.svelte', import.meta.url),
+  'utf8'
+);
 
 const requiredAudioOperations = [
   'new URL(audioFile, window.location.href).href',
@@ -26,11 +31,12 @@ const requiredAudioOperations = [
 ];
 
 describe('paridad del reproductor de teorías', () => {
-  it('Teoría 2 conserva las operaciones de audio comprobadas de Teoría 1', () => {
+  it('Teorías 2, 3 y 4 conservan las operaciones de audio comprobadas de Teoría 1', () => {
     for (const operation of requiredAudioOperations) {
       expect(theory1Source, `Teoría 1 debe contener ${operation}`).toContain(operation);
       expect(theory2Source, `Teoría 2 debe contener ${operation}`).toContain(operation);
       expect(theory3Source, `Teoría 3 debe contener ${operation}`).toContain(operation);
+      expect(theory4Source, `Teoría 4 debe contener ${operation}`).toContain(operation);
     }
   });
 
@@ -54,8 +60,6 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory2Source).toContain('parseSrt(SRT_SOURCE)');
     expect(theory2Source).not.toContain('parseSrt(SRT_TEXT)');
   });
-});
-
 
   it('Teoría 3 usa el MP3 publicado y el origen imperativo correcto', () => {
     expect(indirectTheory3.audioFile).toBe('assets/teoria3.mp3');
@@ -65,3 +69,17 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory3Source).toContain('parseSrt(SRT_SOURCE)');
     expect(theory3Source).not.toContain('parseSrt(SRT_TEXT)');
   });
+
+  it('Teoría 4 usa el MP3 publicado, SRT normalizado y estados de FLAGS', () => {
+    expect(arithmeticFlagsTheory4.audioFile).toBe('assets/teoria4.mp3');
+    expect(theory4Source).toContain('<audio id="audio" preload="metadata"></audio>');
+    expect(theory4Source).not.toContain('src={theory.audioFile}');
+    expect(theory4Source).toContain('const SRT_SOURCE =');
+    expect(theory4Source).toContain('parseSrt(SRT_SOURCE)');
+    expect(theory4Source).not.toContain('parseSrt(SRT_TEXT)');
+    expect(theory4Source).toContain('normalizeSubtitle');
+    expect(theory4Source).toContain('setFlag');
+    expect(theory4Source).toContain('data-flag-value');
+    expect(theory4Source).toContain('data-flag-card');
+  });
+});

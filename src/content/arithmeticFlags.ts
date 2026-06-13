@@ -408,6 +408,7 @@ export const arithmeticFlagsExercise: Exercise = {
   subtitle: 'ADD, SUB, CMP y flags básicos · 8086',
   description: 'Predice resultados y flags después de operaciones aritméticas y comparaciones.',
   estimatedMinutes: 14,
+  requiredTheoryId: 'theory_arithmetic_flags_04',
   initialRegisters: {
   "AX": "0000",
   "BX": "0000",

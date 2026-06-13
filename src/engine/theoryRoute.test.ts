@@ -142,3 +142,92 @@ describe('ruta de Teoría 3', () => {
     );
   });
 });
+
+describe('ruta de Teoría 4', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('coloca Teoría 4 inmediatamente antes del Ejercicio 4', () => {
+    const route = flattenCourseUnitOrder(courseContent);
+    const theoryIndex = route.findIndex((unit) => unit.id === 'theory_arithmetic_flags_04');
+    const exerciseIndex = route.findIndex((unit) => unit.id === 'arithmetic_flags_04');
+
+    expect(theoryIndex).toBeGreaterThan(-1);
+    expect(exerciseIndex).toBe(theoryIndex + 1);
+    expect(route[theoryIndex]).toMatchObject({
+      type: 'theory',
+      id: 'theory_arithmetic_flags_04'
+    });
+  });
+
+  it('declara el audio de Teoría 4 dentro de los assets públicos', () => {
+    const theory = courseContent.theories.find((item) => item.id === 'theory_arithmetic_flags_04');
+    expect(theory?.audioFile).toBe('assets/teoria4.mp3');
+  });
+
+  it('mantiene bloqueado el Ejercicio 4 hasta completar su teoría', () => {
+    const progress = {
+      version: 2,
+      routeCursor: 6,
+      completedTheoryIds: [
+        'theory_mov_01',
+        'theory_memory_dw_02',
+        'theory_indirect_indexed_03'
+      ],
+      manualUnlockedTheoryIds: [],
+      completedExerciseIds: [
+        'mov_basic_01',
+        'direct_memory_dw_02',
+        'indirect_indexed_03'
+      ],
+      manualUnlockedExerciseIds: [],
+      exerciseResults: {},
+      diagnostics: {},
+      lastExerciseId: 'indirect_indexed_03',
+      lastTheoryId: 'theory_indirect_indexed_03',
+      lastUpdated: new Date().toISOString()
+    };
+
+    expect(getExerciseAccess(courseContent, progress, 'arithmetic_flags_04').unlocked).toBe(false);
+  });
+
+  it('migra progreso previo completando la teoría requerida por el ejercicio 4 ya terminado', () => {
+    const stored = JSON.stringify({
+      version: 2,
+      completedTheoryIds: [
+        'theory_mov_01',
+        'theory_memory_dw_02',
+        'theory_indirect_indexed_03'
+      ],
+      completedExerciseIds: [
+        'mov_basic_01',
+        'direct_memory_dw_02',
+        'indirect_indexed_03',
+        'arithmetic_flags_04'
+      ],
+      manualUnlockedTheoryIds: [],
+      manualUnlockedExerciseIds: [],
+      exerciseResults: {},
+      diagnostics: {},
+      lastExerciseId: 'arithmetic_flags_04',
+      lastTheoryId: 'theory_indirect_indexed_03',
+      lastUpdated: new Date().toISOString()
+    });
+
+    const localStorage = {
+      getItem: vi.fn(() => stored),
+      setItem: vi.fn(),
+      removeItem: vi.fn()
+    };
+
+    vi.stubGlobal('window', { localStorage });
+
+    const progress = loadProgress();
+
+    expect(progress.completedTheoryIds).toContain('theory_arithmetic_flags_04');
+    expect(progress.routeCursor).toBeGreaterThan(
+      flattenCourseUnitOrder(courseContent).findIndex((unit) => unit.id === 'arithmetic_flags_04')
+    );
+  });
+});

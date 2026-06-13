@@ -1,5 +1,6 @@
 import type { CourseContent } from '../types';
 import { arithmeticFlagsExercise } from './arithmeticFlags';
+import { arithmeticFlagsTheory4 } from './arithmeticFlagsTheory4';
 import { callRetExercise } from './callRet';
 import { conditionalJumpsExercise } from './conditionalJumps';
 import { directMemoryDwExercise } from './directMemoryDw';
@@ -63,6 +64,9 @@ export const courseContent: CourseContent = {
     title: "Módulo 4 · Aritmética y flags",
     subtitle: "ADD, SUB, CMP y flags básicos",
     description: "Práctica sobre operaciones aritméticas y actualización de ZF, CF, SF, OF y PF.",
+    theoryIds: [
+      "theory_arithmetic_flags_04"
+    ],
     exerciseIds: [
       "arithmetic_flags_04"
     ]
@@ -108,6 +112,6 @@ export const courseContent: CourseContent = {
     ]
   }
 ],
-  theories: [movTheory1, memoryDwTheory2, indirectTheory3],
+  theories: [movTheory1, memoryDwTheory2, indirectTheory3, arithmeticFlagsTheory4],
   exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };
