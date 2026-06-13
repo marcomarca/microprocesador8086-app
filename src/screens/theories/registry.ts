@@ -5,6 +5,7 @@ import ArithmeticFlagsTheoryScreen from './ArithmeticFlagsTheoryScreen.svelte';
 import ConditionalJumpsTheoryScreen from './ConditionalJumpsTheoryScreen.svelte';
 import LoopAccumulatorTheoryScreen from './LoopAccumulatorTheoryScreen.svelte';
 import StackLifoTheoryScreen from './StackLifoTheoryScreen.svelte';
+import CallRetTheoryScreen from './CallRetTheoryScreen.svelte';
 import type { TheoryRendererId } from '../../content/theoryRendererIds';
 import type { TheoryRenderer } from './types';
 
@@ -15,7 +16,8 @@ export const theoryRenderers: Record<TheoryRendererId, TheoryRenderer> = {
   'arithmetic-flags': ArithmeticFlagsTheoryScreen,
   'conditional-jumps': ConditionalJumpsTheoryScreen,
   'loop-accumulator': LoopAccumulatorTheoryScreen,
-  'stack-lifo': StackLifoTheoryScreen
+  'stack-lifo': StackLifoTheoryScreen,
+  'call-ret': CallRetTheoryScreen
 };
 
 export function getTheoryRenderer(renderer: TheoryRendererId): TheoryRenderer | null {

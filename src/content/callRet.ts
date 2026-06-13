@@ -289,6 +289,7 @@ export const callRetExercise: Exercise = {
   subtitle: 'Flujo principal y subrutina · 8086',
   description: 'Predice cómo CALL entra a una subrutina, cómo RET vuelve y cómo se conserva el resultado.',
   estimatedMinutes: 10,
+  requiredTheoryId: 'theory_call_ret_08',
   initialRegisters: {
   "AX": "0000",
   "BX": "0000",

@@ -2,6 +2,7 @@ import type { CourseContent } from '../types';
 import { arithmeticFlagsExercise } from './arithmeticFlags';
 import { arithmeticFlagsTheory4 } from './arithmeticFlagsTheory4';
 import { callRetExercise } from './callRet';
+import { callRetTheory8 } from './callRetTheory8';
 import { conditionalJumpsExercise } from './conditionalJumps';
 import { conditionalJumpsTheory5 } from './conditionalJumpsTheory5';
 import { directMemoryDwExercise } from './directMemoryDw';
@@ -119,11 +120,14 @@ export const courseContent: CourseContent = {
     title: "Módulo 8 · Subrutinas",
     subtitle: "CALL, RET y flujo principal",
     description: "Práctica sobre transferencia de control entre programa principal y subrutina.",
+    theoryIds: [
+      "theory_call_ret_08"
+    ],
     exerciseIds: [
       "call_ret_08"
     ]
   }
 ],
-  theories: [movTheory1, memoryDwTheory2, indirectTheory3, arithmeticFlagsTheory4, conditionalJumpsTheory5, loopAccumulatorTheory6, stackLifoTheory7],
+  theories: [movTheory1, memoryDwTheory2, indirectTheory3, arithmeticFlagsTheory4, conditionalJumpsTheory5, loopAccumulatorTheory6, stackLifoTheory7, callRetTheory8],
   exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };

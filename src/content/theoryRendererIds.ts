@@ -5,7 +5,8 @@ export const theoryRendererIds = [
   'arithmetic-flags',
   'conditional-jumps',
   'loop-accumulator',
-  'stack-lifo'
+  'stack-lifo',
+  'call-ret'
 ] as const;
 
 export type TheoryRendererId = (typeof theoryRendererIds)[number];

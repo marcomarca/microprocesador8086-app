@@ -6,6 +6,7 @@ import { arithmeticFlagsTheory4 } from '../../content/arithmeticFlagsTheory4';
 import { conditionalJumpsTheory5 } from '../../content/conditionalJumpsTheory5';
 import { loopAccumulatorTheory6 } from '../../content/loopAccumulatorTheory6';
 import { stackLifoTheory7 } from '../../content/stackLifoTheory7';
+import { callRetTheory8 } from '../../content/callRetTheory8';
 
 const theory1Source = readFileSync(
   new URL('./MovTheoryScreen.svelte', import.meta.url),
@@ -35,6 +36,10 @@ const theory7Source = readFileSync(
   new URL('./StackLifoTheoryScreen.svelte', import.meta.url),
   'utf8'
 );
+const theory8Source = readFileSync(
+  new URL('./CallRetTheoryScreen.svelte', import.meta.url),
+  'utf8'
+);
 
 const requiredAudioOperations = [
   'new URL(audioFile, window.location.href).href',
@@ -46,7 +51,7 @@ const requiredAudioOperations = [
 ];
 
 describe('paridad del reproductor de teorías', () => {
-  it('Teorías 2, 3, 4, 5, 6 y 7 conservan las operaciones de audio comprobadas de Teoría 1', () => {
+  it('Teorías 2, 3, 4, 5, 6, 7 y 8 conservan las operaciones de audio comprobadas de Teoría 1', () => {
     for (const operation of requiredAudioOperations) {
       expect(theory1Source, `Teoría 1 debe contener ${operation}`).toContain(operation);
       expect(theory2Source, `Teoría 2 debe contener ${operation}`).toContain(operation);
@@ -55,6 +60,7 @@ describe('paridad del reproductor de teorías', () => {
       expect(theory5Source, `Teoría 5 debe contener ${operation}`).toContain(operation);
       expect(theory6Source, `Teoría 6 debe contener ${operation}`).toContain(operation);
       expect(theory7Source, `Teoría 7 debe contener ${operation}`).toContain(operation);
+      expect(theory8Source, `Teoría 8 debe contener ${operation}`).toContain(operation);
     }
   });
 
@@ -170,5 +176,34 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory7Source).toContain('rowBpTop');
     expect(theory7Source).toContain('rowDxEmpty');
   });
+
+  it('Teoría 8 usa el MP3 publicado, SRT normalizado, flujo CALL/RET y control CC', () => {
+    expect(callRetTheory8.audioFile).toBe('assets/teoria8.mp3');
+    expect(theory8Source).toContain('<audio id="audio" preload="metadata"></audio>');
+    expect(theory8Source).not.toContain('src={theory.audioFile}');
+    expect(theory8Source).not.toContain('const AUDIO_FILE = "teoria8.mp3"');
+    expect(theory8Source).toContain('const SRT_SOURCE =');
+    expect(theory8Source).toContain('parseSrt(SRT_SOURCE)');
+    expect(theory8Source).not.toContain('parseSrt(SRT_TEXT)');
+    expect(theory8Source).toContain('normalizeSubtitle');
+    expect(theory8Source).toContain('slideStartCue');
+    expect(theory8Source).toContain('slideRanges');
+    expect(theory8Source).toContain('cueMap');
+    expect(theory8Source).toContain('metaForTime');
+    expect(theory8Source).toContain('applyDynamicState');
+    expect(theory8Source).toContain('s5AxVal');
+    expect(theory8Source).toContain('s5OpText');
+    expect(theory8Source).toContain('s7AxVal');
+    expect(theory8Source).toContain('s7OpText');
+    expect(theory8Source).toContain('s7OpNote');
+    expect(theory8Source).toContain('MOV AX, 0004h');
+    expect(theory8Source).toContain('CALL double');
+    expect(theory8Source).toContain('ADD AX, AX');
+    expect(theory8Source).toContain('RET');
+    expect(theory8Source).toContain('MOV BX, AX');
+    expect(theory8Source).toContain('0004h');
+    expect(theory8Source).toContain('0008h');
+  });
+
 
 });
