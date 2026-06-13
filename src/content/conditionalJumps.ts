@@ -484,6 +484,7 @@ export const conditionalJumpsExercise: Exercise = {
   subtitle: 'CMP y saltos condicionales · 8086',
   description: 'Predice el flujo de ejecución después de CMP, JZ, JG y JL.',
   estimatedMinutes: 14,
+  requiredTheoryId: 'theory_conditional_jumps_05',
   initialRegisters: {
   "AX": "0000",
   "BX": "0000",

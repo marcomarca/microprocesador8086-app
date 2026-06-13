@@ -83,3 +83,17 @@ describe('uso estático de CC en Teoría 4', () => {
     expect(source).toContain('subtitleToggle.destroy()');
   });
 });
+
+
+describe('uso estático de CC en Teoría 5', () => {
+  const source = readFileSync(new URL('./ConditionalJumpsTheoryScreen.svelte', import.meta.url), 'utf8');
+
+  it('declara el botón y panel de subtítulos ocultos por defecto', () => {
+    expect(source).toContain('createSubtitleToggle');
+    expect(source).toContain('id="subtitleBtn"');
+    expect(source).toContain('id="subtitle" hidden');
+    expect(source).toContain('CC');
+    expect(source).toContain('.subtitle[hidden]');
+    expect(source).toContain('subtitleToggle.destroy()');
+  });
+});

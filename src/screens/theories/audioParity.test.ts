@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { memoryDwTheory2 } from '../../content/memoryDwTheory2';
 import { indirectTheory3 } from '../../content/indirectTheory3';
 import { arithmeticFlagsTheory4 } from '../../content/arithmeticFlagsTheory4';
+import { conditionalJumpsTheory5 } from '../../content/conditionalJumpsTheory5';
 
 const theory1Source = readFileSync(
   new URL('./MovTheoryScreen.svelte', import.meta.url),
@@ -18,6 +19,10 @@ const theory3Source = readFileSync(
 );
 const theory4Source = readFileSync(
   new URL('./ArithmeticFlagsTheoryScreen.svelte', import.meta.url),
+  'utf8'
+);
+const theory5Source = readFileSync(
+  new URL('./ConditionalJumpsTheoryScreen.svelte', import.meta.url),
   'utf8'
 );
 
@@ -37,6 +42,7 @@ describe('paridad del reproductor de teorías', () => {
       expect(theory2Source, `Teoría 2 debe contener ${operation}`).toContain(operation);
       expect(theory3Source, `Teoría 3 debe contener ${operation}`).toContain(operation);
       expect(theory4Source, `Teoría 4 debe contener ${operation}`).toContain(operation);
+      expect(theory5Source, `Teoría 5 debe contener ${operation}`).toContain(operation);
     }
   });
 
@@ -81,5 +87,21 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory4Source).toContain('setFlag');
     expect(theory4Source).toContain('data-flag-value');
     expect(theory4Source).toContain('data-flag-card');
+  });
+
+  it('Teoría 5 usa el MP3 publicado, SRT normalizado y control CC', () => {
+    expect(conditionalJumpsTheory5.audioFile).toBe('assets/teoria5.mp3');
+    expect(theory5Source).toContain('<audio id="audio" preload="metadata"></audio>');
+    expect(theory5Source).not.toContain('src={theory.audioFile}');
+    expect(theory5Source).toContain('const SRT_SOURCE =');
+    expect(theory5Source).toContain('parseSrt(SRT_SOURCE)');
+    expect(theory5Source).not.toContain('parseSrt(SRT_TEXT)');
+    expect(theory5Source).toContain('normalizeSubtitle');
+    expect(theory5Source).toContain('slideStartCue');
+    expect(theory5Source).toContain('focusByCue');
+    expect(theory5Source).toContain('JZ RUTA_IGUAL');
+    expect(theory5Source).toContain('JG RUTA_MAYOR');
+    expect(theory5Source).toContain('JL RUTA_MENOR');
+    expect(theory5Source).toContain('JMP SALIDA');
   });
 });
