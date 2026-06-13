@@ -5,6 +5,7 @@ import { conditionalJumpsExercise } from './conditionalJumps';
 import { directMemoryDwExercise } from './directMemoryDw';
 import { errorCatalog } from './errorCatalog';
 import { indirectIndexedExercise } from './indirectIndexed';
+import { indirectTheory3 } from './indirectTheory3';
 import { loopAccumulatorExercise } from './loopAccumulator';
 import { memoryDwTheory2 } from './memoryDwTheory2';
 import { movBasicExercise } from './movBasic';
@@ -49,6 +50,9 @@ export const courseContent: CourseContent = {
     title: "Módulo 3 · Direccionamiento indirecto",
     subtitle: "SI, BX, DI y arreglos DW",
     description: "Práctica sobre registros índice/base, offsets, lectura indirecta y escritura mediante [registro].",
+    theoryIds: [
+      "theory_indirect_indexed_03"
+    ],
     exerciseIds: [
       "indirect_indexed_03"
     ]
@@ -104,6 +108,6 @@ export const courseContent: CourseContent = {
     ]
   }
 ],
-  theories: [movTheory1, memoryDwTheory2],
+  theories: [movTheory1, memoryDwTheory2, indirectTheory3],
   exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };

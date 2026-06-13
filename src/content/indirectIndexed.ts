@@ -22,6 +22,7 @@ export const indirectIndexedExercise: Exercise = {
   subtitle: 'SI, BX, DI y arreglos DW · 8086',
   description: 'Predice cómo se usan SI, BX y DI como referencias a memoria y distingue registro de [registro].',
   estimatedMinutes: 12,
+  requiredTheoryId: 'theory_indirect_indexed_03',
   initialRegisters: { AX: '0000', BX: '0000', SI: '0000', DI: '0000' },
   initialMemory: memInitial,
   passing: {

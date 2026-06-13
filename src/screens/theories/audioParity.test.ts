@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { memoryDwTheory2 } from '../../content/memoryDwTheory2';
+import { indirectTheory3 } from '../../content/indirectTheory3';
 
 const theory1Source = readFileSync(
   new URL('./MovTheoryScreen.svelte', import.meta.url),
@@ -8,6 +9,10 @@ const theory1Source = readFileSync(
 );
 const theory2Source = readFileSync(
   new URL('./MemoryDwTheoryScreen.svelte', import.meta.url),
+  'utf8'
+);
+const theory3Source = readFileSync(
+  new URL('./IndirectIndexedTheoryScreen.svelte', import.meta.url),
   'utf8'
 );
 
@@ -25,6 +30,7 @@ describe('paridad del reproductor de teorías', () => {
     for (const operation of requiredAudioOperations) {
       expect(theory1Source, `Teoría 1 debe contener ${operation}`).toContain(operation);
       expect(theory2Source, `Teoría 2 debe contener ${operation}`).toContain(operation);
+      expect(theory3Source, `Teoría 3 debe contener ${operation}`).toContain(operation);
     }
   });
 
@@ -49,3 +55,13 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory2Source).not.toContain('parseSrt(SRT_TEXT)');
   });
 });
+
+
+  it('Teoría 3 usa el MP3 publicado y el origen imperativo correcto', () => {
+    expect(indirectTheory3.audioFile).toBe('assets/teoria3.mp3');
+    expect(theory3Source).toContain('<audio id="audio" preload="metadata"></audio>');
+    expect(theory3Source).not.toContain('src={theory.audioFile}');
+    expect(theory3Source).toContain('const SRT_SOURCE =');
+    expect(theory3Source).toContain('parseSrt(SRT_SOURCE)');
+    expect(theory3Source).not.toContain('parseSrt(SRT_TEXT)');
+  });
