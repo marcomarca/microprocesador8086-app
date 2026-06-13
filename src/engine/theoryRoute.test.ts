@@ -18,6 +18,12 @@ describe('ruta de Teoría 2', () => {
     expect(route[theoryIndex]).toMatchObject({ type: 'theory', id: 'theory_memory_dw_02' });
   });
 
+  it('declara el audio de Teoría 2 dentro de los assets públicos', () => {
+    const theory = courseContent.theories.find((item) => item.id === 'theory_memory_dw_02');
+
+    expect(theory?.audioFile).toBe('assets/teoria2.mp3');
+  });
+
   it('mantiene bloqueado el Ejercicio 2 hasta completar su teoría', () => {
     const progress = {
       version: 2,

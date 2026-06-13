@@ -339,6 +339,11 @@ let rafId = null;
     cancelAnimationFrame(rafId);
   }
 
+  function resolvePublicAsset(assetPath: string) {
+    const normalizedPath = assetPath.replace(/^\/+/, '');
+    return new URL(normalizedPath, document.baseURI).href;
+  }
+
   function showAudioError(error) {
     const codes = { 1: "MEDIA_ERR_ABORTED", 2: "MEDIA_ERR_NETWORK", 3: "MEDIA_ERR_DECODE", 4: "MEDIA_ERR_SRC_NOT_SUPPORTED" };
     const mediaError = audio.error;
@@ -366,7 +371,7 @@ let rafId = null;
     if (cue) { audio.currentTime = cue.start; update(); }
   }
 
-  audio.src = new URL(theory.audioFile, window.location.href).href;
+  audio.src = resolvePublicAsset(theory.audioFile);
   audio.load();
   playBtn.addEventListener("click", handlePlayClick);
   resetBtn.addEventListener("click", restart);
