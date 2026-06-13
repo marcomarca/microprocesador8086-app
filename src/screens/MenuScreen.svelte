@@ -7,6 +7,7 @@
   export let onOpenTheory: (theory: TheoryLesson) => void = () => undefined;
   export let onOpenExercise: (exercise: Exercise) => void = () => undefined;
   export let onRequestUnlock: (exercise: Exercise) => void = () => undefined;
+  export let onRequestTheoryUnlock: (theory: TheoryLesson) => void = () => undefined;
   export let onClearProgress: () => void = () => undefined;
 
   type ModuleItem =
@@ -38,6 +39,7 @@
   function openTheory(theory: TheoryLesson) {
     const access = getTheoryAccess(content, progress, theory.id);
     if (access.unlocked) onOpenTheory(theory);
+    else onRequestTheoryUnlock(theory);
   }
 
   function openExercise(exercise: Exercise) {
@@ -69,7 +71,6 @@
             class="exercise-item theory-item"
             class:locked={!access.unlocked}
             class:recommended={access.unlocked && !access.completed && access.index === progress.routeCursor}
-            disabled={!access.unlocked}
             on:click={() => openTheory(theory)}
           >
             <div>

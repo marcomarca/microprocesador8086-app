@@ -6,9 +6,11 @@
   import {
     applyExerciseCompletion,
     applyTheoryCompletion,
+    getExerciseAccess,
     getExerciseAction,
     getExerciseById,
-    manuallyUnlockExercise
+    manuallyUnlockExercise,
+    manuallyUnlockTheory
   } from './engine/session';
   import { clearProgress, loadProgress, saveProgress } from './engine/storage';
   import ExerciseScreen from './screens/ExerciseScreen.svelte';
@@ -20,9 +22,13 @@
   import { exerciseSessionStore } from './stores/exerciseSession';
   import type { AppScreen, CourseProgress, Exercise, TheoryLesson } from './types';
 
+  type UnlockTarget =
+    | { type: 'exercise'; exercise: Exercise }
+    | { type: 'theory'; theory: TheoryLesson };
+
   let screen: AppScreen = 'menu';
   let progress: CourseProgress | null = null;
-  let pendingUnlock: Exercise | null = null;
+  let pendingUnlock: UnlockTarget | null = null;
   let activeTheory: TheoryLesson | null = null;
   let runtimeError: string | null = null;
   let navOpen = false;
@@ -74,21 +80,37 @@
     if (progress && !progress.completedTheoryIds.includes(activeTheory.id)) {
       progress = applyTheoryCompletion(progress, courseContent, activeTheory);
     }
+
     const exercise = getExerciseById(courseContent, exerciseId);
-    if (exercise) openExercise(exercise);
+    if (!exercise || !progress) return;
+
+    const access = getExerciseAccess(courseContent, progress, exercise.id);
+    if (access.unlocked) openExercise(exercise);
+    else requestExerciseUnlock(exercise);
   }
 
-  function requestUnlock(exercise: Exercise) {
-    pendingUnlock = exercise;
+  function requestExerciseUnlock(exercise: Exercise) {
+    pendingUnlock = { type: 'exercise', exercise };
+  }
+
+  function requestTheoryUnlock(theory: TheoryLesson) {
+    pendingUnlock = { type: 'theory', theory };
   }
 
   function confirmUnlock() {
-    if (!pendingUnlock) return;
-    if (!progress) return;
-    progress = manuallyUnlockExercise(progress, pendingUnlock.id);
-    const exercise = pendingUnlock;
+    if (!pendingUnlock || !progress) return;
+
+    const target = pendingUnlock;
     pendingUnlock = null;
-    openExercise(exercise);
+
+    if (target.type === 'exercise') {
+      progress = manuallyUnlockExercise(progress, target.exercise.id);
+      openExercise(target.exercise);
+      return;
+    }
+
+    progress = manuallyUnlockTheory(progress, target.theory.id);
+    openTheory(target.theory);
   }
 
   function handleSubmitOrContinue() {
@@ -173,7 +195,8 @@
         {progress}
         onOpenTheory={openTheory}
         onOpenExercise={openExercise}
-        onRequestUnlock={requestUnlock}
+        onRequestUnlock={requestExerciseUnlock}
+        onRequestTheoryUnlock={requestTheoryUnlock}
         onClearProgress={resetProgress}
       />
       {#if progress.lastExerciseId}
@@ -228,7 +251,7 @@
     />
   {/if}
 
-  <UnlockDialog exercise={pendingUnlock} onCancel={() => (pendingUnlock = null)} onConfirm={confirmUnlock} />
+  <UnlockDialog target={pendingUnlock} onCancel={() => (pendingUnlock = null)} onConfirm={confirmUnlock} />
 {:else}
   <main class="app">
     <section class="card" style="margin-top:16px">
