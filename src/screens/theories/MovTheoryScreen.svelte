@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { TheoryLesson } from '../../types';
+  import { createSubtitleToggle } from './subtitleToggle';
 
   export let theory: TheoryLesson;
   export let completed = false;
@@ -140,12 +141,14 @@
     const audio = requireElement<HTMLAudioElement>('#lessonAudio');
     const playButton = requireElement<HTMLButtonElement>('#playButton');
     const restartButton = requireElement<HTMLButtonElement>('#restartButton');
+    const subtitleButton = requireElement<HTMLButtonElement>('#subtitleButton');
     const practiceButton = requireElement<HTMLButtonElement>('#practiceButton');
     const progressBar = requireElement<HTMLElement>('#progressBar');
     const subtitleBox = requireElement<HTMLElement>('#subtitleBox');
     const statusLine = requireElement<HTMLElement>('#statusLine');
     const audioError = requireElement<HTMLElement>('#audioError');
     const toast = requireElement<HTMLElement>('#toast');
+    const subtitleToggle = createSubtitleToggle(subtitleButton, subtitleBox);
 
     audio.src = new URL(audioFile, window.location.href).href;
     audio.load();
@@ -402,6 +405,7 @@
       if (rafId !== null) cancelAnimationFrame(rafId);
       playButton.removeEventListener('click', handlePlayClick);
       restartButton.removeEventListener('click', restart);
+      subtitleToggle.destroy();
       practiceButton.removeEventListener('click', handlePracticeClick);
       stepButtons.forEach((button) => button.removeEventListener('click', handleStepClick));
     };
@@ -676,12 +680,13 @@
 
   <footer class="footer-dock">
     <div class="footer-inner">
-      <div id="subtitleBox" class="subtitle">
+      <div id="subtitleBox" class="subtitle" hidden>
         Pulsa reproducir para iniciar la teoría.
       </div>
       <div class="controls">
         <button id="playButton" class="primary" type="button">Reproducir teoría</button>
         <button id="restartButton" class="secondary" type="button" aria-label="Reiniciar">↺</button>
+        <button id="subtitleButton" class="secondary cc-button" type="button" aria-label="Mostrar subtítulos" aria-pressed="false">CC</button>
       </div>
       <button id="practiceButton" class="primary final-action" type="button">Iniciar práctica</button>
       <div id="toast" class="toast">Abriendo ejercicio asociado.</div>
@@ -1055,11 +1060,19 @@
       font-weight: 750;
     }
 
+    .subtitle[hidden] { display: none; }
+
     .controls {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto auto;
       gap: 8px;
       margin-top: 8px;
+    }
+
+    .cc-button:global(.is-active) {
+      color: var(--accent);
+      border-color: rgba(244, 197, 66, .72);
+      background: rgba(244, 197, 66, .14);
     }
 
     .primary, .secondary {

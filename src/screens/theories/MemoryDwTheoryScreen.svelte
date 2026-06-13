@@ -2,6 +2,7 @@
   // @ts-nocheck
   import { onMount } from 'svelte';
   import type { TheoryLesson } from '../../types';
+  import { createSubtitleToggle } from './subtitleToggle';
 
   export let theory: TheoryLesson;
   export let completed = false;
@@ -117,11 +118,13 @@ const cueFocus = {};
   const audio = requireElement("#audio");
   const playBtn = requireElement("#playBtn");
   const resetBtn = requireElement("#resetBtn");
+  const subtitleBtn = requireElement("#subtitleBtn");
   const practiceBtn = requireElement("#practiceBtn");
   const progressBar = requireElement("#progressBar");
   const subtitle = requireElement("#subtitle");
   const statusLine = requireElement("#statusLine");
   const audioError = requireElement("#audioError");
+  const subtitleToggle = createSubtitleToggle(subtitleBtn, subtitle);
 let rafId = null;
 
   const cues = parseSrt(SRT_SOURCE);
@@ -391,6 +394,7 @@ let rafId = null;
     if (rafId !== null) cancelAnimationFrame(rafId);
     playBtn.removeEventListener("click", handlePlayClick);
     resetBtn.removeEventListener("click", restart);
+    subtitleToggle.destroy();
     practiceBtn.removeEventListener("click", handlePracticeClick);
     stepButtons.forEach((button) => button.removeEventListener("click", handleStepClick));
   };
@@ -606,10 +610,11 @@ let rafId = null;
 
 <footer class="footer-dock">
 <div class="footer-inner">
-<div class="subtitle" id="subtitle"><span>Presiona reproducir para iniciar.</span></div>
+<div class="subtitle" id="subtitle" hidden><span>Presiona reproducir para iniciar.</span></div>
 <div class="controls">
 <button class="primary" id="playBtn" type="button">Reproducir</button>
 <button aria-label="Reiniciar" class="secondary" id="resetBtn" type="button">↺</button>
+<button aria-label="Mostrar subtítulos" aria-pressed="false" class="secondary cc-button" id="subtitleBtn" type="button">CC</button>
 </div>
 <button class="primary final-action" id="practiceBtn" type="button">Iniciar práctica</button>
 <div class="status-line" id="statusLine">Audio esperado: <strong>{theory.audioFile}</strong></div>
@@ -726,10 +731,12 @@ let rafId = null;
   .footer-dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding: 22px 12px 12px; background: linear-gradient(180deg, rgba(15,17,23,0), rgba(15,17,23,.98) 18%); }
   .footer-inner { width: 100%; max-width: 500px; margin: 0 auto; }
   .subtitle { min-height: 64px; padding: 11px 12px; border-radius: 17px; background: rgba(17,20,27,.98); border: 1px solid var(--line); box-shadow: 0 12px 24px rgba(0,0,0,.3); font-size: 15px; line-height: 1.35; font-weight: 760; }
-  .controls { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 8px; }
+  .subtitle[hidden] { display: none; }
+  .controls { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-top: 8px; }
   .primary,.secondary { min-height: 48px; border-radius: 14px; border: 1px solid var(--line); cursor: pointer; font-weight: 950; }
   .primary { background: var(--accent); border-color: rgba(244,197,66,.84); color: #11141b; }
   .secondary { width: 54px; background: #252c39; color: var(--text); }
+  .cc-button:global(.is-active) { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
   .final-action { display: none; width: 100%; margin-top: 8px; }
   .final-action:global(.is-visible) { display: block; }
   .status-line { margin-top: 7px; color: var(--muted); text-align: center; font-size: 11px; line-height: 1.35; overflow-wrap: anywhere; }
