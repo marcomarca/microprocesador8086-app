@@ -292,6 +292,7 @@ export const stackLifoExercise: Exercise = {
   subtitle: 'PUSH, POP, SP y LIFO · 8086',
   description: 'Predice el comportamiento de la pila, el tope y el registro SP.',
   estimatedMinutes: 10,
+  requiredTheoryId: 'theory_stack_lifo_07',
   initialRegisters: {
   "AX": "0000",
   "BX": "0000",

@@ -422,3 +422,105 @@ describe('ruta de Teoría 6', () => {
     );
   });
 });
+
+
+describe('ruta de Teoría 7', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('coloca Teoría 7 inmediatamente antes del Ejercicio 7', () => {
+    const route = flattenCourseUnitOrder(courseContent);
+    const theoryIndex = route.findIndex((unit) => unit.id === 'theory_stack_lifo_07');
+    const exerciseIndex = route.findIndex((unit) => unit.id === 'stack_lifo_07');
+
+    expect(theoryIndex).toBeGreaterThan(-1);
+    expect(exerciseIndex).toBe(theoryIndex + 1);
+    expect(route[theoryIndex]).toMatchObject({
+      type: 'theory',
+      id: 'theory_stack_lifo_07'
+    });
+  });
+
+  it('declara el audio de Teoría 7 dentro de los assets públicos', () => {
+    const theory = courseContent.theories.find((item) => item.id === 'theory_stack_lifo_07');
+    expect(theory?.audioFile).toBe('assets/teoria7.mp3');
+  });
+
+  it('mantiene bloqueado el Ejercicio 7 hasta completar su teoría', () => {
+    const progress = {
+      version: 2,
+      routeCursor: 12,
+      completedTheoryIds: [
+        'theory_mov_01',
+        'theory_memory_dw_02',
+        'theory_indirect_indexed_03',
+        'theory_arithmetic_flags_04',
+        'theory_conditional_jumps_05',
+        'theory_loop_accumulator_06'
+      ],
+      manualUnlockedTheoryIds: [],
+      completedExerciseIds: [
+        'mov_basic_01',
+        'direct_memory_dw_02',
+        'indirect_indexed_03',
+        'arithmetic_flags_04',
+        'conditional_jumps_05',
+        'loop_accumulator_06'
+      ],
+      manualUnlockedExerciseIds: [],
+      exerciseResults: {},
+      diagnostics: {},
+      lastExerciseId: 'loop_accumulator_06',
+      lastTheoryId: 'theory_loop_accumulator_06',
+      lastUpdated: new Date().toISOString()
+    };
+
+    expect(getExerciseAccess(courseContent, progress, 'stack_lifo_07').unlocked).toBe(false);
+  });
+
+  it('migra progreso previo completando la teoría requerida por el ejercicio 7 ya terminado', () => {
+    const stored = JSON.stringify({
+      version: 2,
+      completedTheoryIds: [
+        'theory_mov_01',
+        'theory_memory_dw_02',
+        'theory_indirect_indexed_03',
+        'theory_arithmetic_flags_04',
+        'theory_conditional_jumps_05',
+        'theory_loop_accumulator_06'
+      ],
+      completedExerciseIds: [
+        'mov_basic_01',
+        'direct_memory_dw_02',
+        'indirect_indexed_03',
+        'arithmetic_flags_04',
+        'conditional_jumps_05',
+        'loop_accumulator_06',
+        'stack_lifo_07'
+      ],
+      manualUnlockedTheoryIds: [],
+      manualUnlockedExerciseIds: [],
+      exerciseResults: {},
+      diagnostics: {},
+      lastExerciseId: 'stack_lifo_07',
+      lastTheoryId: 'theory_loop_accumulator_06',
+      lastUpdated: new Date().toISOString()
+    });
+
+    const localStorage = {
+      getItem: vi.fn(() => stored),
+      setItem: vi.fn(),
+      removeItem: vi.fn()
+    };
+
+    vi.stubGlobal('window', { localStorage });
+
+    const progress = loadProgress();
+
+    expect(progress.completedTheoryIds).toContain('theory_stack_lifo_07');
+    expect(progress.routeCursor).toBeGreaterThan(
+      flattenCourseUnitOrder(courseContent).findIndex((unit) => unit.id === 'stack_lifo_07')
+    );
+  });
+});

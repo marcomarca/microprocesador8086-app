@@ -14,6 +14,7 @@ import { memoryDwTheory2 } from './memoryDwTheory2';
 import { movBasicExercise } from './movBasic';
 import { movTheory1 } from './movTheory1';
 import { stackLifoExercise } from './stackLifo';
+import { stackLifoTheory7 } from './stackLifoTheory7';
 
 export const courseContent: CourseContent = {
   title: 'Microprocesador 8086',
@@ -105,6 +106,9 @@ export const courseContent: CourseContent = {
     title: "Módulo 7 · Pila básica",
     subtitle: "PUSH, POP, SP y LIFO",
     description: "Práctica sobre comportamiento LIFO y cambios de SP al apilar y desapilar palabras.",
+    theoryIds: [
+      "theory_stack_lifo_07"
+    ],
     exerciseIds: [
       "stack_lifo_07"
     ]
@@ -120,6 +124,6 @@ export const courseContent: CourseContent = {
     ]
   }
 ],
-  theories: [movTheory1, memoryDwTheory2, indirectTheory3, arithmeticFlagsTheory4, conditionalJumpsTheory5, loopAccumulatorTheory6],
+  theories: [movTheory1, memoryDwTheory2, indirectTheory3, arithmeticFlagsTheory4, conditionalJumpsTheory5, loopAccumulatorTheory6, stackLifoTheory7],
   exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };

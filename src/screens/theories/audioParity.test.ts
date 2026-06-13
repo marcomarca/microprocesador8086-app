@@ -5,6 +5,7 @@ import { indirectTheory3 } from '../../content/indirectTheory3';
 import { arithmeticFlagsTheory4 } from '../../content/arithmeticFlagsTheory4';
 import { conditionalJumpsTheory5 } from '../../content/conditionalJumpsTheory5';
 import { loopAccumulatorTheory6 } from '../../content/loopAccumulatorTheory6';
+import { stackLifoTheory7 } from '../../content/stackLifoTheory7';
 
 const theory1Source = readFileSync(
   new URL('./MovTheoryScreen.svelte', import.meta.url),
@@ -30,6 +31,10 @@ const theory6Source = readFileSync(
   new URL('./LoopAccumulatorTheoryScreen.svelte', import.meta.url),
   'utf8'
 );
+const theory7Source = readFileSync(
+  new URL('./StackLifoTheoryScreen.svelte', import.meta.url),
+  'utf8'
+);
 
 const requiredAudioOperations = [
   'new URL(audioFile, window.location.href).href',
@@ -41,7 +46,7 @@ const requiredAudioOperations = [
 ];
 
 describe('paridad del reproductor de teorías', () => {
-  it('Teorías 2, 3, 4, 5 y 6 conservan las operaciones de audio comprobadas de Teoría 1', () => {
+  it('Teorías 2, 3, 4, 5, 6 y 7 conservan las operaciones de audio comprobadas de Teoría 1', () => {
     for (const operation of requiredAudioOperations) {
       expect(theory1Source, `Teoría 1 debe contener ${operation}`).toContain(operation);
       expect(theory2Source, `Teoría 2 debe contener ${operation}`).toContain(operation);
@@ -49,6 +54,7 @@ describe('paridad del reproductor de teorías', () => {
       expect(theory4Source, `Teoría 4 debe contener ${operation}`).toContain(operation);
       expect(theory5Source, `Teoría 5 debe contener ${operation}`).toContain(operation);
       expect(theory6Source, `Teoría 6 debe contener ${operation}`).toContain(operation);
+      expect(theory7Source, `Teoría 7 debe contener ${operation}`).toContain(operation);
     }
   });
 
@@ -136,4 +142,33 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory6Source).toContain('word [SI]');
     expect(theory6Source).toContain('MOV word RESULTADO_FINAL, AX');
   });
+
+  it('Teoría 7 usa el MP3 publicado, SRT normalizado, estados de pila y control CC', () => {
+    expect(stackLifoTheory7.audioFile).toBe('assets/teoria7.mp3');
+    expect(theory7Source).toContain('<audio id="audio" preload="metadata"></audio>');
+    expect(theory7Source).not.toContain('src={theory.audioFile}');
+    expect(theory7Source).not.toContain('teoria7%20pro.mp3');
+    expect(theory7Source).toContain('const SRT_SOURCE =');
+    expect(theory7Source).toContain('parseSrt(SRT_SOURCE)');
+    expect(theory7Source).toContain('cueVisual');
+    expect(theory7Source).toContain('slideStartCue');
+    expect(theory7Source).toContain('slideRanges');
+    expect(theory7Source).toContain('sceneStarts');
+    expect(theory7Source).toContain('applyRuntimeState');
+    expect(theory7Source).toContain('setTrustedHtml');
+    expect(theory7Source).toContain('PUSH SI');
+    expect(theory7Source).toContain('PUSH DI');
+    expect(theory7Source).toContain('POP BP');
+    expect(theory7Source).toContain('POP DX');
+    expect(theory7Source).toContain('LIFO');
+    expect(theory7Source).toContain('SP = SP - 2');
+    expect(theory7Source).toContain('SP = SP + 2');
+    expect(theory7Source).toContain('1020h');
+    expect(theory7Source).toContain('3040h');
+    expect(theory7Source).toContain('bytesFe');
+    expect(theory7Source).toContain('bytesFc');
+    expect(theory7Source).toContain('rowBpTop');
+    expect(theory7Source).toContain('rowDxEmpty');
+  });
+
 });
