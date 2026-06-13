@@ -42,4 +42,10 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory2Source).toContain('<audio id="audio" preload="metadata"></audio>');
     expect(theory2Source).not.toContain('src={theory.audioFile}');
   });
+
+  it('Teoría 2 analiza la constante SRT que realmente declara', () => {
+    expect(theory2Source).toContain('const SRT_SOURCE =');
+    expect(theory2Source).toContain('parseSrt(SRT_SOURCE)');
+    expect(theory2Source).not.toContain('parseSrt(SRT_TEXT)');
+  });
 });

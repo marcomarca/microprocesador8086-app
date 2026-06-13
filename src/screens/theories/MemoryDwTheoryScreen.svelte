@@ -124,7 +124,7 @@ const cueFocus = {};
   const audioError = requireElement("#audioError");
 let rafId = null;
 
-  const cues = parseSrt(SRT_TEXT);
+  const cues = parseSrt(SRT_SOURCE);
   const fallbackDuration = cues.length ? cues[cues.length - 1].end : LAST_END;
 
   function parseSrt(raw) {
