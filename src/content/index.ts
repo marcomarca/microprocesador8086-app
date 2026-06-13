@@ -9,6 +9,7 @@ import { errorCatalog } from './errorCatalog';
 import { indirectIndexedExercise } from './indirectIndexed';
 import { indirectTheory3 } from './indirectTheory3';
 import { loopAccumulatorExercise } from './loopAccumulator';
+import { loopAccumulatorTheory6 } from './loopAccumulatorTheory6';
 import { memoryDwTheory2 } from './memoryDwTheory2';
 import { movBasicExercise } from './movBasic';
 import { movTheory1 } from './movTheory1';
@@ -91,6 +92,9 @@ export const courseContent: CourseContent = {
     title: "Módulo 6 · Bucles con arreglos",
     subtitle: "LOOP, CX, SI y acumulador",
     description: "Práctica sobre recorrido de arreglos DW con SI, acumulación en AX y control con CX.",
+    theoryIds: [
+      "theory_loop_accumulator_06"
+    ],
     exerciseIds: [
       "loop_accumulator_06"
     ]
@@ -116,6 +120,6 @@ export const courseContent: CourseContent = {
     ]
   }
 ],
-  theories: [movTheory1, memoryDwTheory2, indirectTheory3, arithmeticFlagsTheory4, conditionalJumpsTheory5],
+  theories: [movTheory1, memoryDwTheory2, indirectTheory3, arithmeticFlagsTheory4, conditionalJumpsTheory5, loopAccumulatorTheory6],
   exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };

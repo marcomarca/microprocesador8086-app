@@ -3,7 +3,8 @@ export const theoryRendererIds = [
   'memory-dw',
   'indirect-indexed',
   'arithmetic-flags',
-  'conditional-jumps'
+  'conditional-jumps',
+  'loop-accumulator'
 ] as const;
 
 export type TheoryRendererId = (typeof theoryRendererIds)[number];

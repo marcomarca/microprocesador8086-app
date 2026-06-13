@@ -9,17 +9,20 @@ describe('registro de renderizadores teóricos', () => {
     const theory3 = courseContent.theories.find((theory) => theory.id === 'theory_indirect_indexed_03');
     const theory4 = courseContent.theories.find((theory) => theory.id === 'theory_arithmetic_flags_04');
     const theory5 = courseContent.theories.find((theory) => theory.id === 'theory_conditional_jumps_05');
+    const theory6 = courseContent.theories.find((theory) => theory.id === 'theory_loop_accumulator_06');
 
     expect(theory1).toBeDefined();
     expect(theory2).toBeDefined();
     expect(theory3).toBeDefined();
     expect(theory4).toBeDefined();
     expect(theory5).toBeDefined();
+    expect(theory6).toBeDefined();
     expect(getTheoryRenderer(theory1!.renderer)).toBe(theoryRenderers['mov-registers']);
     expect(getTheoryRenderer(theory2!.renderer)).toBe(theoryRenderers['memory-dw']);
     expect(getTheoryRenderer(theory3!.renderer)).toBe(theoryRenderers['indirect-indexed']);
     expect(getTheoryRenderer(theory4!.renderer)).toBe(theoryRenderers['arithmetic-flags']);
     expect(getTheoryRenderer(theory5!.renderer)).toBe(theoryRenderers['conditional-jumps']);
+    expect(getTheoryRenderer(theory6!.renderer)).toBe(theoryRenderers['loop-accumulator']);
     expect(getTheoryRenderer(theory1!.renderer)).not.toBe(getTheoryRenderer(theory2!.renderer));
   });
 

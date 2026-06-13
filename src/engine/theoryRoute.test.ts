@@ -325,3 +325,100 @@ describe('ruta de Teoría 5', () => {
     );
   });
 });
+
+describe('ruta de Teoría 6', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('coloca Teoría 6 inmediatamente antes del Ejercicio 6', () => {
+    const route = flattenCourseUnitOrder(courseContent);
+    const theoryIndex = route.findIndex((unit) => unit.id === 'theory_loop_accumulator_06');
+    const exerciseIndex = route.findIndex((unit) => unit.id === 'loop_accumulator_06');
+
+    expect(theoryIndex).toBeGreaterThan(-1);
+    expect(exerciseIndex).toBe(theoryIndex + 1);
+    expect(route[theoryIndex]).toMatchObject({
+      type: 'theory',
+      id: 'theory_loop_accumulator_06'
+    });
+  });
+
+  it('declara el audio de Teoría 6 dentro de los assets públicos', () => {
+    const theory = courseContent.theories.find((item) => item.id === 'theory_loop_accumulator_06');
+    expect(theory?.audioFile).toBe('assets/teoria6.mp3');
+  });
+
+  it('mantiene bloqueado el Ejercicio 6 hasta completar su teoría', () => {
+    const progress = {
+      version: 2,
+      routeCursor: 10,
+      completedTheoryIds: [
+        'theory_mov_01',
+        'theory_memory_dw_02',
+        'theory_indirect_indexed_03',
+        'theory_arithmetic_flags_04',
+        'theory_conditional_jumps_05'
+      ],
+      manualUnlockedTheoryIds: [],
+      completedExerciseIds: [
+        'mov_basic_01',
+        'direct_memory_dw_02',
+        'indirect_indexed_03',
+        'arithmetic_flags_04',
+        'conditional_jumps_05'
+      ],
+      manualUnlockedExerciseIds: [],
+      exerciseResults: {},
+      diagnostics: {},
+      lastExerciseId: 'conditional_jumps_05',
+      lastTheoryId: 'theory_conditional_jumps_05',
+      lastUpdated: new Date().toISOString()
+    };
+
+    expect(getExerciseAccess(courseContent, progress, 'loop_accumulator_06').unlocked).toBe(false);
+  });
+
+  it('migra progreso previo completando la teoría requerida por el ejercicio 6 ya terminado', () => {
+    const stored = JSON.stringify({
+      version: 2,
+      completedTheoryIds: [
+        'theory_mov_01',
+        'theory_memory_dw_02',
+        'theory_indirect_indexed_03',
+        'theory_arithmetic_flags_04',
+        'theory_conditional_jumps_05'
+      ],
+      completedExerciseIds: [
+        'mov_basic_01',
+        'direct_memory_dw_02',
+        'indirect_indexed_03',
+        'arithmetic_flags_04',
+        'conditional_jumps_05',
+        'loop_accumulator_06'
+      ],
+      manualUnlockedTheoryIds: [],
+      manualUnlockedExerciseIds: [],
+      exerciseResults: {},
+      diagnostics: {},
+      lastExerciseId: 'loop_accumulator_06',
+      lastTheoryId: 'theory_conditional_jumps_05',
+      lastUpdated: new Date().toISOString()
+    });
+
+    const localStorage = {
+      getItem: vi.fn(() => stored),
+      setItem: vi.fn(),
+      removeItem: vi.fn()
+    };
+
+    vi.stubGlobal('window', { localStorage });
+
+    const progress = loadProgress();
+
+    expect(progress.completedTheoryIds).toContain('theory_loop_accumulator_06');
+    expect(progress.routeCursor).toBeGreaterThan(
+      flattenCourseUnitOrder(courseContent).findIndex((unit) => unit.id === 'loop_accumulator_06')
+    );
+  });
+});

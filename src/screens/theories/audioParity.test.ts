@@ -4,6 +4,7 @@ import { memoryDwTheory2 } from '../../content/memoryDwTheory2';
 import { indirectTheory3 } from '../../content/indirectTheory3';
 import { arithmeticFlagsTheory4 } from '../../content/arithmeticFlagsTheory4';
 import { conditionalJumpsTheory5 } from '../../content/conditionalJumpsTheory5';
+import { loopAccumulatorTheory6 } from '../../content/loopAccumulatorTheory6';
 
 const theory1Source = readFileSync(
   new URL('./MovTheoryScreen.svelte', import.meta.url),
@@ -25,6 +26,10 @@ const theory5Source = readFileSync(
   new URL('./ConditionalJumpsTheoryScreen.svelte', import.meta.url),
   'utf8'
 );
+const theory6Source = readFileSync(
+  new URL('./LoopAccumulatorTheoryScreen.svelte', import.meta.url),
+  'utf8'
+);
 
 const requiredAudioOperations = [
   'new URL(audioFile, window.location.href).href',
@@ -36,13 +41,14 @@ const requiredAudioOperations = [
 ];
 
 describe('paridad del reproductor de teorías', () => {
-  it('Teorías 2, 3 y 4 conservan las operaciones de audio comprobadas de Teoría 1', () => {
+  it('Teorías 2, 3, 4, 5 y 6 conservan las operaciones de audio comprobadas de Teoría 1', () => {
     for (const operation of requiredAudioOperations) {
       expect(theory1Source, `Teoría 1 debe contener ${operation}`).toContain(operation);
       expect(theory2Source, `Teoría 2 debe contener ${operation}`).toContain(operation);
       expect(theory3Source, `Teoría 3 debe contener ${operation}`).toContain(operation);
       expect(theory4Source, `Teoría 4 debe contener ${operation}`).toContain(operation);
       expect(theory5Source, `Teoría 5 debe contener ${operation}`).toContain(operation);
+      expect(theory6Source, `Teoría 6 debe contener ${operation}`).toContain(operation);
     }
   });
 
@@ -103,5 +109,31 @@ describe('paridad del reproductor de teorías', () => {
     expect(theory5Source).toContain('JG RUTA_MAYOR');
     expect(theory5Source).toContain('JL RUTA_MENOR');
     expect(theory5Source).toContain('JMP SALIDA');
+  });
+
+  it('Teoría 6 usa el MP3 publicado, SRT normalizado, estados de registros y control CC', () => {
+    expect(loopAccumulatorTheory6.audioFile).toBe('assets/teoria6.mp3');
+    expect(theory6Source).toContain('<audio id="audio" preload="metadata"></audio>');
+    expect(theory6Source).not.toContain('src={theory.audioFile}');
+    expect(theory6Source).toContain('const SRT_SOURCE =');
+    expect(theory6Source).toContain('parseSrt(SRT_SOURCE)');
+    expect(theory6Source).not.toContain('parseSrt(SRT_TEXT)');
+    expect(theory6Source).toContain('normalizeSubtitle');
+    expect(theory6Source).toContain('slideStartCue');
+    expect(theory6Source).toContain('slideRanges');
+    expect(theory6Source).toContain('cueFocus');
+    expect(theory6Source).toContain('setRegister');
+    expect(theory6Source).toContain('setOperation');
+    expect(theory6Source).toContain('data-reg="AX"');
+    expect(theory6Source).toContain('data-reg="CX"');
+    expect(theory6Source).toContain('data-reg="SI"');
+    expect(theory6Source).toContain('data-op="sumOp"');
+    expect(theory6Source).toContain('data-op="loopOp"');
+    expect(theory6Source).toContain('data-op="turnOp"');
+    expect(theory6Source).toContain('data-op="repeatOp"');
+    expect(theory6Source).toContain('data-op="exitOp"');
+    expect(theory6Source).toContain('LOOP CICLO_SUMA');
+    expect(theory6Source).toContain('word [SI]');
+    expect(theory6Source).toContain('MOV word RESULTADO_FINAL, AX');
   });
 });

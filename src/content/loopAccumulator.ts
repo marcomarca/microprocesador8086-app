@@ -385,6 +385,7 @@ export const loopAccumulatorExercise: Exercise = {
   subtitle: 'LOOP, CX, SI y arreglo DW · 8086',
   description: 'Predice cómo se acumulan palabras de un arreglo usando AX, SI y CX.',
   estimatedMinutes: 14,
+  requiredTheoryId: 'theory_loop_accumulator_06',
   initialRegisters: {
   "AX": "0000",
   "CX": "0000",
