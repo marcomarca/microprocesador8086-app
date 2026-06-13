@@ -20,6 +20,7 @@ export const directMemoryDwExercise: Exercise = {
   subtitle: 'Memoria directa con DW · 8086',
   description: 'Predice cómo cambian registros y memoria al cargar, sumar, restar y guardar palabras de 16 bits.',
   estimatedMinutes: 10,
+  requiredTheoryId: 'theory_memory_dw_02',
   initialRegisters: { AX: '0000', BX: '0000', CX: '0000', DX: '0000' },
   initialMemory: memInitial,
   passing: {

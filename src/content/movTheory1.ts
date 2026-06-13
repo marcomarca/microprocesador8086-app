@@ -2,6 +2,7 @@ import type { TheoryLesson } from '../types';
 
 export const movTheory1: TheoryLesson = {
   id: 'theory_mov_01',
+  renderer: 'mov-registers',
   moduleId: 'mod_mov',
   order: 1,
   title: 'Teoría 1 · MOV en 8086',

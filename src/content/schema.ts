@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { theoryRendererIds } from './theoryRendererIds';
 import type { CourseContent } from '../types';
 
 const registerStateSchema = z.record(z.string(), z.string());
@@ -61,6 +62,7 @@ const exerciseSchema = z.object({
 
 const theorySchema = z.object({
   id: z.string().min(1),
+  renderer: z.enum(theoryRendererIds),
   moduleId: z.string().min(1),
   order: z.number().int().positive(),
   title: z.string().min(1),

@@ -126,6 +126,7 @@ export type Exercise = {
 
 export type TheoryLesson = {
   id: string;
+  renderer: TheoryRendererId;
   moduleId: string;
   order: number;
   title: string;
@@ -267,3 +268,4 @@ export type GoogleSheetsPayload = {
   completedAt: string;
   readableReport: string;
 };
+import type { TheoryRendererId } from './content/theoryRendererIds';

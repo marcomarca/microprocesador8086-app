@@ -6,6 +6,7 @@ import { directMemoryDwExercise } from './directMemoryDw';
 import { errorCatalog } from './errorCatalog';
 import { indirectIndexedExercise } from './indirectIndexed';
 import { loopAccumulatorExercise } from './loopAccumulator';
+import { memoryDwTheory2 } from './memoryDwTheory2';
 import { movBasicExercise } from './movBasic';
 import { movTheory1 } from './movTheory1';
 import { stackLifoExercise } from './stackLifo';
@@ -35,6 +36,9 @@ export const courseContent: CourseContent = {
     title: "Módulo 2 · Memoria directa",
     subtitle: "DW, direccionamiento directo y little endian",
     description: "Práctica sobre palabras en memoria, etiquetas, operandos inmediatos y escritura de resultados.",
+    theoryIds: [
+      "theory_memory_dw_02"
+    ],
     exerciseIds: [
       "direct_memory_dw_02"
     ]
@@ -100,6 +104,6 @@ export const courseContent: CourseContent = {
     ]
   }
 ],
-  theories: [movTheory1],
+  theories: [movTheory1, memoryDwTheory2],
   exercises: [movBasicExercise, directMemoryDwExercise, indirectIndexedExercise, arithmeticFlagsExercise, conditionalJumpsExercise, loopAccumulatorExercise, stackLifoExercise, callRetExercise]
 };
