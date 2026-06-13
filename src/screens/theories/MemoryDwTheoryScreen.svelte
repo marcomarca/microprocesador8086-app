@@ -345,7 +345,7 @@ let rafId = null;
     const mediaError = audio.error;
     const codeText = mediaError ? `${codes[mediaError.code] || "ERROR"} (${mediaError.code})` : "sin código";
     audioError.classList.add("is-visible");
-    audioError.innerHTML = `No se pudo cargar el audio <strong>${escapeHtml(theory.audioFile)}<\/strong>.<br>Ruta usada: <code>${escapeHtml(audio.currentSrc || audio.src)}<\/code><br>Error: ${escapeHtml(codeText)}.`;
+    audioError.innerHTML = `No se pudo cargar el audio <strong>${escapeHtml(audioFile)}<\/strong>.<br>Ruta usada: <code>${escapeHtml(audio.src)}<\/code><br>Error: ${escapeHtml(codeText)}.`;
     if (error) console.error(error);
   }
 
@@ -616,7 +616,7 @@ let rafId = null;
 </div>
 </footer>
 
-<audio id="audio" preload="metadata" src={theory.audioFile}></audio>
+<audio id="audio" preload="metadata"></audio>
 
 
 </div>
